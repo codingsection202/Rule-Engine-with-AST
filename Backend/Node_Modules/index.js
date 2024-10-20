@@ -1,15 +1,22 @@
 'use strict';
 
-var test = {
-	__proto__: null,
-	foo: {}
-};
+var test = require('tape');
+var hasSymbols = require('../');
+var runSymbolTests = require('./tests');
 
-var $Object = Object;
+test('interface', function (t) {
+	t.equal(typeof hasSymbols, 'function', 'is a function');
+	t.equal(typeof hasSymbols(), 'boolean', 'returns a boolean');
+	t.end();
+});
 
-/** @type {import('.')} */
-module.exports = function hasProto() {
-	// @ts-expect-error: TS errors on an inherited property for some reason
-	return { __proto__: test }.foo === test.foo
-		&& !(test instanceof $Object);
-};
+test('Symbols are supported', { skip: !hasSymbols() }, function (t) {
+	runSymbolTests(t);
+	t.end();
+});
+
+test('Symbols are not supported', { skip: hasSymbols() }, function (t) {
+	t.equal(typeof Symbol, 'undefined', 'global Symbol is undefined');
+	t.equal(typeof Object.getOwnPropertySymbols, 'undefined', 'Object.getOwnPropertySymbols does not exist');
+	t.end();
+});
