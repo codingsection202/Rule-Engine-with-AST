@@ -1,392 +1,538 @@
-'use strict';
+/*!
+ * depd
+ * Copyright(c) 2014-2018 Douglas Christopher Wilson
+ * MIT Licensed
+ */
 
-var test = require('tape');
-var v = require('es-value-fixtures');
-var forEach = require('for-each');
-var inspect = require('object-inspect');
-var hasOwn = require('hasown');
-var hasPropertyDescriptors = require('has-property-descriptors')();
-var getOwnPropertyDescriptors = require('object.getownpropertydescriptors');
-var ownKeys = require('reflect.ownkeys');
+/**
+ * Module dependencies.
+ */
 
-var defineDataProperty = require('../');
+var relative = require('path').relative
 
-test('defineDataProperty', function (t) {
-	t.test('argument validation', function (st) {
-		forEach(v.primitives, function (nonObject) {
-			st['throws'](
-				// @ts-expect-error
-				function () { defineDataProperty(nonObject, 'key', 'value'); },
-				TypeError,
-				'throws on non-object input: ' + inspect(nonObject)
-			);
-		});
+/**
+ * Module exports.
+ */
 
-		forEach(v.nonPropertyKeys, function (nonPropertyKey) {
-			st['throws'](
-				// @ts-expect-error
-				function () { defineDataProperty({}, nonPropertyKey, 'value'); },
-				TypeError,
-				'throws on non-PropertyKey input: ' + inspect(nonPropertyKey)
-			);
-		});
+module.exports = depd
 
-		forEach(v.nonBooleans, function (nonBoolean) {
-			if (nonBoolean !== null) {
-				st['throws'](
-					// @ts-expect-error
-					function () { defineDataProperty({}, 'key', 'value', nonBoolean); },
-					TypeError,
-					'throws on non-boolean nonEnumerable: ' + inspect(nonBoolean)
-				);
+/**
+ * Get the path to base files on.
+ */
 
-				st['throws'](
-					// @ts-expect-error
-					function () { defineDataProperty({}, 'key', 'value', false, nonBoolean); },
-					TypeError,
-					'throws on non-boolean nonWritable: ' + inspect(nonBoolean)
-				);
+var basePath = process.cwd()
 
-				st['throws'](
-					// @ts-expect-error
-					function () { defineDataProperty({}, 'key', 'value', false, false, nonBoolean); },
-					TypeError,
-					'throws on non-boolean nonConfigurable: ' + inspect(nonBoolean)
-				);
-			}
-		});
+/**
+ * Determine if namespace is contained in the string.
+ */
 
-		st.end();
-	});
+function containsNamespace (str, namespace) {
+  var vals = str.split(/[ ,]+/)
+  var ns = String(namespace).toLowerCase()
 
-	t.test('normal data property', function (st) {
-		/** @type {Record<PropertyKey, string>} */
-		var obj = { existing: 'existing property' };
-		st.ok(hasOwn(obj, 'existing'), 'has initial own property');
-		st.equal(obj.existing, 'existing property', 'has expected initial value');
+  for (var i = 0; i < vals.length; i++) {
+    var val = vals[i]
 
-		var res = defineDataProperty(obj, 'added', 'added property');
-		st.equal(res, void undefined, 'returns `undefined`');
-		st.ok(hasOwn(obj, 'added'), 'has expected own property');
-		st.equal(obj.added, 'added property', 'has expected value');
+    // namespace contained
+    if (val && (val === '*' || val.toLowerCase() === ns)) {
+      return true
+    }
+  }
 
-		defineDataProperty(obj, 'existing', 'new value');
-		st.ok(hasOwn(obj, 'existing'), 'still has expected own property');
-		st.equal(obj.existing, 'new value', 'has new expected value');
+  return false
+}
 
-		defineDataProperty(obj, 'explicit1', 'new value', false);
-		st.ok(hasOwn(obj, 'explicit1'), 'has expected own property (explicit enumerable)');
-		st.equal(obj.explicit1, 'new value', 'has new expected value (explicit enumerable)');
+/**
+ * Convert a data descriptor to accessor descriptor.
+ */
 
-		defineDataProperty(obj, 'explicit2', 'new value', false, false);
-		st.ok(hasOwn(obj, 'explicit2'), 'has expected own property (explicit writable)');
-		st.equal(obj.explicit2, 'new value', 'has new expected value (explicit writable)');
+function convertDataDescriptorToAccessor (obj, prop, message) {
+  var descriptor = Object.getOwnPropertyDescriptor(obj, prop)
+  var value = descriptor.value
 
-		defineDataProperty(obj, 'explicit3', 'new value', false, false, false);
-		st.ok(hasOwn(obj, 'explicit3'), 'has expected own property (explicit configurable)');
-		st.equal(obj.explicit3, 'new value', 'has new expected value (explicit configurable)');
+  descriptor.get = function getter () { return value }
 
-		st.end();
-	});
+  if (descriptor.writable) {
+    descriptor.set = function setter (val) { return (value = val) }
+  }
 
-	t.test('loose mode', { skip: !hasPropertyDescriptors }, function (st) {
-		var obj = { existing: 'existing property' };
+  delete descriptor.value
+  delete descriptor.writable
 
-		defineDataProperty(obj, 'added', 'added value 1', true, null, null, true);
-		st.deepEqual(
-			getOwnPropertyDescriptors(obj),
-			{
-				existing: {
-					configurable: true,
-					enumerable: true,
-					value: 'existing property',
-					writable: true
-				},
-				added: {
-					configurable: true,
-					enumerable: !hasPropertyDescriptors,
-					value: 'added value 1',
-					writable: true
-				}
-			},
-			'in loose mode, obj still adds property 1'
-		);
+  Object.defineProperty(obj, prop, descriptor)
 
-		defineDataProperty(obj, 'added', 'added value 2', false, true, null, true);
-		st.deepEqual(
-			getOwnPropertyDescriptors(obj),
-			{
-				existing: {
-					configurable: true,
-					enumerable: true,
-					value: 'existing property',
-					writable: true
-				},
-				added: {
-					configurable: true,
-					enumerable: true,
-					value: 'added value 2',
-					writable: !hasPropertyDescriptors
-				}
-			},
-			'in loose mode, obj still adds property 2'
-		);
+  return descriptor
+}
 
-		defineDataProperty(obj, 'added', 'added value 3', false, false, true, true);
-		st.deepEqual(
-			getOwnPropertyDescriptors(obj),
-			{
-				existing: {
-					configurable: true,
-					enumerable: true,
-					value: 'existing property',
-					writable: true
-				},
-				added: {
-					configurable: !hasPropertyDescriptors,
-					enumerable: true,
-					value: 'added value 3',
-					writable: true
-				}
-			},
-			'in loose mode, obj still adds property 3'
-		);
+/**
+ * Create arguments string to keep arity.
+ */
 
-		st.end();
-	});
+function createArgumentsString (arity) {
+  var str = ''
 
-	t.test('non-normal data property, ES3', { skip: hasPropertyDescriptors }, function (st) {
-		/** @type {Record<PropertyKey, string>} */
-		var obj = { existing: 'existing property' };
+  for (var i = 0; i < arity; i++) {
+    str += ', arg' + i
+  }
 
-		st['throws'](
-			function () { defineDataProperty(obj, 'added', 'added value', true); },
-			SyntaxError,
-			'nonEnumerable throws a Syntax Error'
-		);
+  return str.substr(2)
+}
 
-		st['throws'](
-			function () { defineDataProperty(obj, 'added', 'added value', false, true); },
-			SyntaxError,
-			'nonWritable throws a Syntax Error'
-		);
+/**
+ * Create stack string from stack.
+ */
 
-		st['throws'](
-			function () { defineDataProperty(obj, 'added', 'added value', false, false, true); },
-			SyntaxError,
-			'nonWritable throws a Syntax Error'
-		);
+function createStackString (stack) {
+  var str = this.name + ': ' + this.namespace
 
-		st.deepEqual(
-			ownKeys(obj),
-			['existing'],
-			'obj still has expected keys'
-		);
-		st.equal(obj.existing, 'existing property', 'obj still has expected values');
+  if (this.message) {
+    str += ' deprecated ' + this.message
+  }
 
-		st.end();
-	});
+  for (var i = 0; i < stack.length; i++) {
+    str += '\n    at ' + stack[i].toString()
+  }
 
-	t.test('new non-normal data property, ES5+', { skip: !hasPropertyDescriptors }, function (st) {
-		/** @type {Record<PropertyKey, string>} */
-		var obj = { existing: 'existing property' };
+  return str
+}
 
-		defineDataProperty(obj, 'nonEnum', null, true);
-		defineDataProperty(obj, 'nonWrit', null, false, true);
-		defineDataProperty(obj, 'nonConf', null, false, false, true);
+/**
+ * Create deprecate for namespace in caller.
+ */
 
-		st.deepEqual(
-			getOwnPropertyDescriptors(obj),
-			{
-				existing: {
-					configurable: true,
-					enumerable: true,
-					value: 'existing property',
-					writable: true
-				},
-				nonEnum: {
-					configurable: true,
-					enumerable: false,
-					value: null,
-					writable: true
-				},
-				nonWrit: {
-					configurable: true,
-					enumerable: true,
-					value: null,
-					writable: false
-				},
-				nonConf: {
-					configurable: false,
-					enumerable: true,
-					value: null,
-					writable: true
-				}
-			},
-			'obj has expected property descriptors'
-		);
+function depd (namespace) {
+  if (!namespace) {
+    throw new TypeError('argument namespace is required')
+  }
 
-		st.end();
-	});
+  var stack = getStack()
+  var site = callSiteLocation(stack[1])
+  var file = site[0]
 
-	t.test('existing non-normal data property, ES5+', { skip: !hasPropertyDescriptors }, function (st) {
-		// test case changing an existing non-normal property
+  function deprecate (message) {
+    // call to self as log
+    log.call(deprecate, message)
+  }
 
-		/** @type {Record<string, null | string>} */
-		var obj = {};
-		Object.defineProperty(obj, 'nonEnum', { configurable: true, enumerable: false, value: null, writable: true });
-		Object.defineProperty(obj, 'nonWrit', { configurable: true, enumerable: true, value: null, writable: false });
-		Object.defineProperty(obj, 'nonConf', { configurable: false, enumerable: true, value: null, writable: true });
+  deprecate._file = file
+  deprecate._ignored = isignored(namespace)
+  deprecate._namespace = namespace
+  deprecate._traced = istraced(namespace)
+  deprecate._warned = Object.create(null)
 
-		st.deepEqual(
-			getOwnPropertyDescriptors(obj),
-			{
-				nonEnum: {
-					configurable: true,
-					enumerable: false,
-					value: null,
-					writable: true
-				},
-				nonWrit: {
-					configurable: true,
-					enumerable: true,
-					value: null,
-					writable: false
-				},
-				nonConf: {
-					configurable: false,
-					enumerable: true,
-					value: null,
-					writable: true
-				}
-			},
-			'obj initially has expected property descriptors'
-		);
+  deprecate.function = wrapfunction
+  deprecate.property = wrapproperty
 
-		defineDataProperty(obj, 'nonEnum', 'new value', false);
-		defineDataProperty(obj, 'nonWrit', 'new value', false, false);
-		st['throws'](
-			function () { defineDataProperty(obj, 'nonConf', 'new value', false, false, false); },
-			TypeError,
-			'can not alter a nonconfigurable property'
-		);
+  return deprecate
+}
 
-		st.deepEqual(
-			getOwnPropertyDescriptors(obj),
-			{
-				nonEnum: {
-					configurable: true,
-					enumerable: true,
-					value: 'new value',
-					writable: true
-				},
-				nonWrit: {
-					configurable: true,
-					enumerable: true,
-					value: 'new value',
-					writable: true
-				},
-				nonConf: {
-					configurable: false,
-					enumerable: true,
-					value: null,
-					writable: true
-				}
-			},
-			'obj ends up with expected property descriptors'
-		);
+/**
+ * Determine if event emitter has listeners of a given type.
+ *
+ * The way to do this check is done three different ways in Node.js >= 0.8
+ * so this consolidates them into a minimal set using instance methods.
+ *
+ * @param {EventEmitter} emitter
+ * @param {string} type
+ * @returns {boolean}
+ * @private
+ */
 
-		st.end();
-	});
+function eehaslisteners (emitter, type) {
+  var count = typeof emitter.listenerCount !== 'function'
+    ? emitter.listeners(type).length
+    : emitter.listenerCount(type)
 
-	t.test('frozen object, ES5+', { skip: !hasPropertyDescriptors }, function (st) {
-		var frozen = Object.freeze({ existing: true });
+  return count > 0
+}
 
-		st['throws'](
-			function () { defineDataProperty(frozen, 'existing', 'new value'); },
-			TypeError,
-			'frozen object can not modify an existing property'
-		);
+/**
+ * Determine if namespace is ignored.
+ */
 
-		st['throws'](
-			function () { defineDataProperty(frozen, 'new', 'new property'); },
-			TypeError,
-			'frozen object can not add a new property'
-		);
+function isignored (namespace) {
+  if (process.noDeprecation) {
+    // --no-deprecation support
+    return true
+  }
 
-		st.end();
-	});
+  var str = process.env.NO_DEPRECATION || ''
 
-	t.test('sealed object, ES5+', { skip: !hasPropertyDescriptors }, function (st) {
-		var sealed = Object.seal({ existing: true });
-		st.deepEqual(
-			Object.getOwnPropertyDescriptor(sealed, 'existing'),
-			{
-				configurable: false,
-				enumerable: true,
-				value: true,
-				writable: true
-			},
-			'existing value on sealed object has expected descriptor'
-		);
+  // namespace ignored
+  return containsNamespace(str, namespace)
+}
 
-		defineDataProperty(sealed, 'existing', 'new value');
+/**
+ * Determine if namespace is traced.
+ */
 
-		st.deepEqual(
-			Object.getOwnPropertyDescriptor(sealed, 'existing'),
-			{
-				configurable: false,
-				enumerable: true,
-				value: 'new value',
-				writable: true
-			},
-			'existing value on sealed object has changed descriptor'
-		);
+function istraced (namespace) {
+  if (process.traceDeprecation) {
+    // --trace-deprecation support
+    return true
+  }
 
-		st['throws'](
-			function () { defineDataProperty(sealed, 'new', 'new property'); },
-			TypeError,
-			'sealed object can not add a new property'
-		);
+  var str = process.env.TRACE_DEPRECATION || ''
 
-		st.end();
-	});
+  // namespace traced
+  return containsNamespace(str, namespace)
+}
 
-	t.test('nonextensible object, ES5+', { skip: !hasPropertyDescriptors }, function (st) {
-		var nonExt = Object.preventExtensions({ existing: true });
+/**
+ * Display deprecation message.
+ */
 
-		st.deepEqual(
-			Object.getOwnPropertyDescriptor(nonExt, 'existing'),
-			{
-				configurable: true,
-				enumerable: true,
-				value: true,
-				writable: true
-			},
-			'existing value on non-extensible object has expected descriptor'
-		);
+function log (message, site) {
+  var haslisteners = eehaslisteners(process, 'deprecation')
 
-		defineDataProperty(nonExt, 'existing', 'new value', true);
+  // abort early if no destination
+  if (!haslisteners && this._ignored) {
+    return
+  }
 
-		st.deepEqual(
-			Object.getOwnPropertyDescriptor(nonExt, 'existing'),
-			{
-				configurable: true,
-				enumerable: false,
-				value: 'new value',
-				writable: true
-			},
-			'existing value on non-extensible object has changed descriptor'
-		);
+  var caller
+  var callFile
+  var callSite
+  var depSite
+  var i = 0
+  var seen = false
+  var stack = getStack()
+  var file = this._file
 
-		st['throws'](
-			function () { defineDataProperty(nonExt, 'new', 'new property'); },
-			TypeError,
-			'non-extensible object can not add a new property'
-		);
+  if (site) {
+    // provided site
+    depSite = site
+    callSite = callSiteLocation(stack[1])
+    callSite.name = depSite.name
+    file = callSite[0]
+  } else {
+    // get call site
+    i = 2
+    depSite = callSiteLocation(stack[i])
+    callSite = depSite
+  }
 
-		st.end();
-	});
+  // get caller of deprecated thing in relation to file
+  for (; i < stack.length; i++) {
+    caller = callSiteLocation(stack[i])
+    callFile = caller[0]
 
-	t.end();
-});
+    if (callFile === file) {
+      seen = true
+    } else if (callFile === this._file) {
+      file = this._file
+    } else if (seen) {
+      break
+    }
+  }
+
+  var key = caller
+    ? depSite.join(':') + '__' + caller.join(':')
+    : undefined
+
+  if (key !== undefined && key in this._warned) {
+    // already warned
+    return
+  }
+
+  this._warned[key] = true
+
+  // generate automatic message from call site
+  var msg = message
+  if (!msg) {
+    msg = callSite === depSite || !callSite.name
+      ? defaultMessage(depSite)
+      : defaultMessage(callSite)
+  }
+
+  // emit deprecation if listeners exist
+  if (haslisteners) {
+    var err = DeprecationError(this._namespace, msg, stack.slice(i))
+    process.emit('deprecation', err)
+    return
+  }
+
+  // format and write message
+  var format = process.stderr.isTTY
+    ? formatColor
+    : formatPlain
+  var output = format.call(this, msg, caller, stack.slice(i))
+  process.stderr.write(output + '\n', 'utf8')
+}
+
+/**
+ * Get call site location as array.
+ */
+
+function callSiteLocation (callSite) {
+  var file = callSite.getFileName() || '<anonymous>'
+  var line = callSite.getLineNumber()
+  var colm = callSite.getColumnNumber()
+
+  if (callSite.isEval()) {
+    file = callSite.getEvalOrigin() + ', ' + file
+  }
+
+  var site = [file, line, colm]
+
+  site.callSite = callSite
+  site.name = callSite.getFunctionName()
+
+  return site
+}
+
+/**
+ * Generate a default message from the site.
+ */
+
+function defaultMessage (site) {
+  var callSite = site.callSite
+  var funcName = site.name
+
+  // make useful anonymous name
+  if (!funcName) {
+    funcName = '<anonymous@' + formatLocation(site) + '>'
+  }
+
+  var context = callSite.getThis()
+  var typeName = context && callSite.getTypeName()
+
+  // ignore useless type name
+  if (typeName === 'Object') {
+    typeName = undefined
+  }
+
+  // make useful type name
+  if (typeName === 'Function') {
+    typeName = context.name || typeName
+  }
+
+  return typeName && callSite.getMethodName()
+    ? typeName + '.' + funcName
+    : funcName
+}
+
+/**
+ * Format deprecation message without color.
+ */
+
+function formatPlain (msg, caller, stack) {
+  var timestamp = new Date().toUTCString()
+
+  var formatted = timestamp +
+    ' ' + this._namespace +
+    ' deprecated ' + msg
+
+  // add stack trace
+  if (this._traced) {
+    for (var i = 0; i < stack.length; i++) {
+      formatted += '\n    at ' + stack[i].toString()
+    }
+
+    return formatted
+  }
+
+  if (caller) {
+    formatted += ' at ' + formatLocation(caller)
+  }
+
+  return formatted
+}
+
+/**
+ * Format deprecation message with color.
+ */
+
+function formatColor (msg, caller, stack) {
+  var formatted = '\x1b[36;1m' + this._namespace + '\x1b[22;39m' + // bold cyan
+    ' \x1b[33;1mdeprecated\x1b[22;39m' + // bold yellow
+    ' \x1b[0m' + msg + '\x1b[39m' // reset
+
+  // add stack trace
+  if (this._traced) {
+    for (var i = 0; i < stack.length; i++) {
+      formatted += '\n    \x1b[36mat ' + stack[i].toString() + '\x1b[39m' // cyan
+    }
+
+    return formatted
+  }
+
+  if (caller) {
+    formatted += ' \x1b[36m' + formatLocation(caller) + '\x1b[39m' // cyan
+  }
+
+  return formatted
+}
+
+/**
+ * Format call site location.
+ */
+
+function formatLocation (callSite) {
+  return relative(basePath, callSite[0]) +
+    ':' + callSite[1] +
+    ':' + callSite[2]
+}
+
+/**
+ * Get the stack as array of call sites.
+ */
+
+function getStack () {
+  var limit = Error.stackTraceLimit
+  var obj = {}
+  var prep = Error.prepareStackTrace
+
+  Error.prepareStackTrace = prepareObjectStackTrace
+  Error.stackTraceLimit = Math.max(10, limit)
+
+  // capture the stack
+  Error.captureStackTrace(obj)
+
+  // slice this function off the top
+  var stack = obj.stack.slice(1)
+
+  Error.prepareStackTrace = prep
+  Error.stackTraceLimit = limit
+
+  return stack
+}
+
+/**
+ * Capture call site stack from v8.
+ */
+
+function prepareObjectStackTrace (obj, stack) {
+  return stack
+}
+
+/**
+ * Return a wrapped function in a deprecation message.
+ */
+
+function wrapfunction (fn, message) {
+  if (typeof fn !== 'function') {
+    throw new TypeError('argument fn must be a function')
+  }
+
+  var args = createArgumentsString(fn.length)
+  var stack = getStack()
+  var site = callSiteLocation(stack[1])
+
+  site.name = fn.name
+
+  // eslint-disable-next-line no-new-func
+  var deprecatedfn = new Function('fn', 'log', 'deprecate', 'message', 'site',
+    '"use strict"\n' +
+    'return function (' + args + ') {' +
+    'log.call(deprecate, message, site)\n' +
+    'return fn.apply(this, arguments)\n' +
+    '}')(fn, log, this, message, site)
+
+  return deprecatedfn
+}
+
+/**
+ * Wrap property in a deprecation message.
+ */
+
+function wrapproperty (obj, prop, message) {
+  if (!obj || (typeof obj !== 'object' && typeof obj !== 'function')) {
+    throw new TypeError('argument obj must be object')
+  }
+
+  var descriptor = Object.getOwnPropertyDescriptor(obj, prop)
+
+  if (!descriptor) {
+    throw new TypeError('must call property on owner object')
+  }
+
+  if (!descriptor.configurable) {
+    throw new TypeError('property must be configurable')
+  }
+
+  var deprecate = this
+  var stack = getStack()
+  var site = callSiteLocation(stack[1])
+
+  // set site name
+  site.name = prop
+
+  // convert data descriptor
+  if ('value' in descriptor) {
+    descriptor = convertDataDescriptorToAccessor(obj, prop, message)
+  }
+
+  var get = descriptor.get
+  var set = descriptor.set
+
+  // wrap getter
+  if (typeof get === 'function') {
+    descriptor.get = function getter () {
+      log.call(deprecate, message, site)
+      return get.apply(this, arguments)
+    }
+  }
+
+  // wrap setter
+  if (typeof set === 'function') {
+    descriptor.set = function setter () {
+      log.call(deprecate, message, site)
+      return set.apply(this, arguments)
+    }
+  }
+
+  Object.defineProperty(obj, prop, descriptor)
+}
+
+/**
+ * Create DeprecationError for deprecation
+ */
+
+function DeprecationError (namespace, message, stack) {
+  var error = new Error()
+  var stackString
+
+  Object.defineProperty(error, 'constructor', {
+    value: DeprecationError
+  })
+
+  Object.defineProperty(error, 'message', {
+    configurable: true,
+    enumerable: false,
+    value: message,
+    writable: true
+  })
+
+  Object.defineProperty(error, 'name', {
+    enumerable: false,
+    configurable: true,
+    value: 'DeprecationError',
+    writable: true
+  })
+
+  Object.defineProperty(error, 'namespace', {
+    configurable: true,
+    enumerable: false,
+    value: namespace,
+    writable: true
+  })
+
+  Object.defineProperty(error, 'stack', {
+    configurable: true,
+    enumerable: false,
+    get: function () {
+      if (stackString !== undefined) {
+        return stackString
+      }
+
+      // prepare stack trace
+      return (stackString = createStackString.call(this, stack))
+    },
+    set: function setter (val) {
+      stackString = val
+    }
+  })
+
+  return error
+}

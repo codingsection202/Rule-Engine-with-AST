@@ -1,85 +1,83 @@
 {
-  "_from": "bytes@3.1.2",
-  "_id": "bytes@3.1.2",
+  "_from": "depd@2.0.0",
+  "_id": "depd@2.0.0",
   "_inBundle": false,
-  "_integrity": "sha512-/Nf7TyzTx6S3yRJObOAV7956r8cr2+Oj8AC5dt8wSP3BQAoeX58NoHyCU8P8zGkNXStjTSi6fzO6F0pBdcYbEg==",
-  "_location": "/bytes",
+  "_integrity": "sha512-g7nH6P6dyDioJogAAGprGpCtVImJhpPk/roCzdb3fIh61/s/nPsfR6onyMwkCAR/OlC3yBC0lESvUoQEAssIrw==",
+  "_location": "/depd",
   "_phantomChildren": {},
   "_requested": {
     "type": "version",
     "registry": true,
-    "raw": "bytes@3.1.2",
-    "name": "bytes",
-    "escapedName": "bytes",
-    "rawSpec": "3.1.2",
+    "raw": "depd@2.0.0",
+    "name": "depd",
+    "escapedName": "depd",
+    "rawSpec": "2.0.0",
     "saveSpec": null,
-    "fetchSpec": "3.1.2"
+    "fetchSpec": "2.0.0"
   },
   "_requiredBy": [
     "/body-parser",
-    "/raw-body"
+    "/express",
+    "/http-errors",
+    "/send"
   ],
-  "_resolved": "https://registry.npmjs.org/bytes/-/bytes-3.1.2.tgz",
-  "_shasum": "8b0beeb98605adf1b128fa4386403c009e0221a5",
-  "_spec": "bytes@3.1.2",
+  "_resolved": "https://registry.npmjs.org/depd/-/depd-2.0.0.tgz",
+  "_shasum": "b696163cc757560d09cf22cc8fad1571b79e76df",
+  "_spec": "depd@2.0.0",
   "_where": "/home/i_bojja.pravalika/Downloads/-Rule-Engine-with-AST-main/Backend/node_modules/body-parser",
   "author": {
-    "name": "TJ Holowaychuk",
-    "email": "tj@vision-media.ca",
-    "url": "http://tjholowaychuk.com"
+    "name": "Douglas Christopher Wilson",
+    "email": "doug@somethingdoug.com"
   },
+  "browser": "lib/browser/index.js",
   "bugs": {
-    "url": "https://github.com/visionmedia/bytes.js/issues"
+    "url": "https://github.com/dougwilson/nodejs-depd/issues"
   },
   "bundleDependencies": false,
-  "contributors": [
-    {
-      "name": "Jed Watson",
-      "email": "jed.watson@me.com"
-    },
-    {
-      "name": "Théo FIDRY",
-      "email": "theo.fidry@gmail.com"
-    }
-  ],
   "deprecated": false,
-  "description": "Utility to parse a string bytes to bytes and vice-versa",
+  "description": "Deprecate all the things",
   "devDependencies": {
-    "eslint": "7.32.0",
-    "eslint-plugin-markdown": "2.2.1",
-    "mocha": "9.2.0",
-    "nyc": "15.1.0"
+    "beautify-benchmark": "0.2.4",
+    "benchmark": "2.1.4",
+    "eslint": "5.7.0",
+    "eslint-config-standard": "12.0.0",
+    "eslint-plugin-import": "2.14.0",
+    "eslint-plugin-markdown": "1.0.0-beta.7",
+    "eslint-plugin-node": "7.0.1",
+    "eslint-plugin-promise": "4.0.1",
+    "eslint-plugin-standard": "4.0.0",
+    "istanbul": "0.4.5",
+    "mocha": "5.2.0",
+    "safe-buffer": "5.1.2",
+    "uid-safe": "2.1.5"
   },
   "engines": {
     "node": ">= 0.8"
   },
   "files": [
+    "lib/",
     "History.md",
     "LICENSE",
-    "Readme.md",
-    "index.js"
+    "index.js",
+    "Readme.md"
   ],
-  "homepage": "https://github.com/visionmedia/bytes.js#readme",
+  "homepage": "https://github.com/dougwilson/nodejs-depd#readme",
   "keywords": [
-    "byte",
-    "bytes",
-    "utility",
-    "parse",
-    "parser",
-    "convert",
-    "converter"
+    "deprecate",
+    "deprecated"
   ],
   "license": "MIT",
-  "name": "bytes",
+  "name": "depd",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/visionmedia/bytes.js.git"
+    "url": "git+https://github.com/dougwilson/nodejs-depd.git"
   },
   "scripts": {
-    "lint": "eslint .",
-    "test": "mocha --check-leaks --reporter spec",
-    "test-ci": "nyc --reporter=lcov --reporter=text npm test",
-    "test-cov": "nyc --reporter=html --reporter=text npm test"
+    "bench": "node benchmark/index.js",
+    "lint": "eslint --plugin markdown --ext js,md .",
+    "test": "mocha --reporter spec --bail test/",
+    "test-ci": "istanbul cover --print=none node_modules/mocha/bin/_mocha -- --reporter spec test/ && istanbul report lcovonly text-summary",
+    "test-cov": "istanbul cover --print=none node_modules/mocha/bin/_mocha -- --reporter dot test/ && istanbul report lcov text-summary"
   },
-  "version": "3.1.2"
+  "version": "2.0.0"
 }
