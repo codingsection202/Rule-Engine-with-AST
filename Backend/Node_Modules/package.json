@@ -1,70 +1,72 @@
 {
-  "_from": "ipaddr.js@1.9.1",
-  "_id": "ipaddr.js@1.9.1",
+  "_from": "is-binary-path@~2.1.0",
+  "_id": "is-binary-path@2.1.0",
   "_inBundle": false,
-  "_integrity": "sha512-0KI/607xoxSToH7GjN1FfSbLoU0+btTicjsQSWQlh/hZykN8KpmMf7uYwPW3R+akZ6R/w18ZlXSHBYXiYUPO3g==",
-  "_location": "/ipaddr.js",
+  "_integrity": "sha512-ZMERYes6pDydyuGidse7OsHxtbI7WVeUEozgR/g7rd0xUimYNlvZRE/K2MgZTjWy725IfelLeVcEM97mmtRGXw==",
+  "_location": "/is-binary-path",
   "_phantomChildren": {},
   "_requested": {
-    "type": "version",
+    "type": "range",
     "registry": true,
-    "raw": "ipaddr.js@1.9.1",
-    "name": "ipaddr.js",
-    "escapedName": "ipaddr.js",
-    "rawSpec": "1.9.1",
+    "raw": "is-binary-path@~2.1.0",
+    "name": "is-binary-path",
+    "escapedName": "is-binary-path",
+    "rawSpec": "~2.1.0",
     "saveSpec": null,
-    "fetchSpec": "1.9.1"
+    "fetchSpec": "~2.1.0"
   },
   "_requiredBy": [
-    "/proxy-addr"
+    "/chokidar"
   ],
-  "_resolved": "https://registry.npmjs.org/ipaddr.js/-/ipaddr.js-1.9.1.tgz",
-  "_shasum": "bff38543eeb8984825079ff3a2a8e6cbd46781b3",
-  "_spec": "ipaddr.js@1.9.1",
-  "_where": "/home/i_bojja.pravalika/Downloads/-Rule-Engine-with-AST-main/Backend/node_modules/proxy-addr",
+  "_resolved": "https://registry.npmjs.org/is-binary-path/-/is-binary-path-2.1.0.tgz",
+  "_shasum": "ea1f7f3b80f064236e83470f86c09c254fb45b09",
+  "_spec": "is-binary-path@~2.1.0",
+  "_where": "/home/i_bojja.pravalika/Downloads/-Rule-Engine-with-AST-main/Backend/node_modules/chokidar",
   "author": {
-    "name": "whitequark",
-    "email": "whitequark@whitequark.org"
+    "name": "Sindre Sorhus",
+    "email": "sindresorhus@gmail.com",
+    "url": "sindresorhus.com"
   },
   "bugs": {
-    "url": "https://github.com/whitequark/ipaddr.js/issues"
+    "url": "https://github.com/sindresorhus/is-binary-path/issues"
   },
   "bundleDependencies": false,
-  "dependencies": {},
-  "deprecated": false,
-  "description": "A library for manipulating IPv4 and IPv6 addresses in JavaScript.",
-  "devDependencies": {
-    "coffee-script": "~1.12.6",
-    "nodeunit": "^0.11.3",
-    "uglify-js": "~3.0.19"
+  "dependencies": {
+    "binary-extensions": "^2.0.0"
   },
-  "directories": {
-    "lib": "./lib"
+  "deprecated": false,
+  "description": "Check if a file path is a binary file",
+  "devDependencies": {
+    "ava": "^1.4.1",
+    "tsd": "^0.7.2",
+    "xo": "^0.24.0"
   },
   "engines": {
-    "node": ">= 0.10"
+    "node": ">=8"
   },
   "files": [
-    "lib/",
-    "LICENSE",
-    "ipaddr.min.js"
+    "index.js",
+    "index.d.ts"
   ],
-  "homepage": "https://github.com/whitequark/ipaddr.js#readme",
+  "homepage": "https://github.com/sindresorhus/is-binary-path#readme",
   "keywords": [
-    "ip",
-    "ipv4",
-    "ipv6"
+    "binary",
+    "extensions",
+    "extension",
+    "file",
+    "path",
+    "check",
+    "detect",
+    "is"
   ],
   "license": "MIT",
-  "main": "./lib/ipaddr.js",
-  "name": "ipaddr.js",
+  "name": "is-binary-path",
   "repository": {
     "type": "git",
-    "url": "git://github.com/whitequark/ipaddr.js.git"
+    "url": "git+https://github.com/sindresorhus/is-binary-path.git"
   },
   "scripts": {
-    "test": "cake build test"
+    "test": "xo && ava && tsd"
   },
-  "types": "./lib/ipaddr.js.d.ts",
-  "version": "1.9.1"
+  "version": "2.1.0"
 }
