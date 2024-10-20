@@ -1,59 +1,82 @@
 {
-  "_from": "escape-html@~1.0.3",
-  "_id": "escape-html@1.0.3",
+  "_from": "cookie@0.6.0",
+  "_id": "cookie@0.6.0",
   "_inBundle": false,
-  "_integrity": "sha512-NiSupZ4OeuGwr68lGIeym/ksIZMJodUGOSCZ/FSnTxcrekbvqrgdUxlJOMpijaKZVjAJrWrGs/6Jy8OMuyj9ow==",
-  "_location": "/escape-html",
+  "_integrity": "sha512-U71cyTamuh1CRNCfpGY6to28lxvNwPG4Guz/EVjgf3Jmzv0vlDp1atT9eS5dDjMYHucpHbWns6Lwf3BKz6svdw==",
+  "_location": "/express/cookie",
   "_phantomChildren": {},
   "_requested": {
-    "type": "range",
+    "type": "version",
     "registry": true,
-    "raw": "escape-html@~1.0.3",
-    "name": "escape-html",
-    "escapedName": "escape-html",
-    "rawSpec": "~1.0.3",
+    "raw": "cookie@0.6.0",
+    "name": "cookie",
+    "escapedName": "cookie",
+    "rawSpec": "0.6.0",
     "saveSpec": null,
-    "fetchSpec": "~1.0.3"
+    "fetchSpec": "0.6.0"
   },
   "_requiredBy": [
-    "/express",
-    "/finalhandler",
-    "/send",
-    "/serve-static"
+    "/express"
   ],
-  "_resolved": "https://registry.npmjs.org/escape-html/-/escape-html-1.0.3.tgz",
-  "_shasum": "0258eae4d3d0c0974de1c169188ef0051d1d1988",
-  "_spec": "escape-html@~1.0.3",
+  "_resolved": "https://registry.npmjs.org/cookie/-/cookie-0.6.0.tgz",
+  "_shasum": "2798b04b071b0ecbff0dbb62a505a8efa4e19051",
+  "_spec": "cookie@0.6.0",
   "_where": "/home/i_bojja.pravalika/Downloads/-Rule-Engine-with-AST-main/Backend/node_modules/express",
+  "author": {
+    "name": "Roman Shtylman",
+    "email": "shtylman@gmail.com"
+  },
   "bugs": {
-    "url": "https://github.com/component/escape-html/issues"
+    "url": "https://github.com/jshttp/cookie/issues"
   },
   "bundleDependencies": false,
+  "contributors": [
+    {
+      "name": "Douglas Christopher Wilson",
+      "email": "doug@somethingdoug.com"
+    }
+  ],
   "deprecated": false,
-  "description": "Escape string for use in HTML",
+  "description": "HTTP server cookie parsing and serialization",
   "devDependencies": {
     "beautify-benchmark": "0.2.4",
-    "benchmark": "1.0.0"
+    "benchmark": "2.1.4",
+    "eslint": "8.53.0",
+    "eslint-plugin-markdown": "3.0.1",
+    "mocha": "10.2.0",
+    "nyc": "15.1.0",
+    "safe-buffer": "5.2.1",
+    "top-sites": "1.1.194"
+  },
+  "engines": {
+    "node": ">= 0.6"
   },
   "files": [
+    "HISTORY.md",
     "LICENSE",
-    "Readme.md",
+    "README.md",
+    "SECURITY.md",
     "index.js"
   ],
-  "homepage": "https://github.com/component/escape-html#readme",
+  "homepage": "https://github.com/jshttp/cookie#readme",
   "keywords": [
-    "escape",
-    "html",
-    "utility"
+    "cookie",
+    "cookies"
   ],
   "license": "MIT",
-  "name": "escape-html",
+  "name": "cookie",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/component/escape-html.git"
+    "url": "git+https://github.com/jshttp/cookie.git"
   },
   "scripts": {
-    "bench": "node benchmark/index.js"
+    "bench": "node benchmark/index.js",
+    "lint": "eslint .",
+    "test": "mocha --reporter spec --bail --check-leaks test/",
+    "test-ci": "nyc --reporter=lcov --reporter=text npm test",
+    "test-cov": "nyc --reporter=html --reporter=text npm test",
+    "update-bench": "node scripts/update-benchmark.js",
+    "version": "node scripts/version-history.js && git add HISTORY.md"
   },
-  "version": "1.0.3"
+  "version": "0.6.0"
 }

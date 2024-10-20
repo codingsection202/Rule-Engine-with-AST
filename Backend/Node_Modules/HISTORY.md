@@ -1,83 +1,147 @@
-1.8.1 / 2017-09-12
+0.6.0 / 2023-11-06
 ==================
 
-  * perf: replace regular expression with substring
+  * Add `partitioned` option
 
-1.8.0 / 2017-02-18
+0.5.0 / 2022-04-11
 ==================
 
-  * Use SHA1 instead of MD5 for ETag hashing
-    - Improves performance for larger entities
-    - Works with FIPS 140-2 OpenSSL configuration
+  * Add `priority` option
+  * Fix `expires` option to reject invalid dates
+  * perf: improve default decode speed
+  * perf: remove slow string split in parse
 
-1.7.0 / 2015-06-08
+0.4.2 / 2022-02-02
 ==================
 
-  * Always include entity length in ETags for hash length extensions
-  * Generate non-Stats ETags using MD5 only (no longer CRC32)
-  * Improve stat performance by removing hashing
-  * Remove base64 padding in ETags to shorten
-  * Use MD5 instead of MD4 in weak ETags over 1KB
+  * perf: read value only when assigning in parse
+  * perf: remove unnecessary regexp in parse
 
-1.6.0 / 2015-05-10
+0.4.1 / 2020-04-21
 ==================
 
-  * Improve support for JXcore
-  * Remove requirement of `atime` in the stats object
-  * Support "fake" stats objects in environments without `fs`
+  * Fix `maxAge` option to reject invalid values
 
-1.5.1 / 2014-11-19
+0.4.0 / 2019-05-15
 ==================
 
-  * deps: crc@3.2.1
-    - Minor fixes
+  * Add `SameSite=None` support
 
-1.5.0 / 2014-10-14
+0.3.1 / 2016-05-26
 ==================
 
-  * Improve string performance
-  * Slightly improve speed for weak ETags over 1KB
+  * Fix `sameSite: true` to work with draft-7 clients
+    - `true` now sends `SameSite=Strict` instead of `SameSite`
 
-1.4.0 / 2014-09-21
+0.3.0 / 2016-05-26
 ==================
 
-  * Support "fake" stats objects
-  * Support Node.js 0.6
+  * Add `sameSite` option
+    - Replaces `firstPartyOnly` option, never implemented by browsers
+  * Improve error message when `encode` is not a function
+  * Improve error message when `expires` is not a `Date`
 
-1.3.1 / 2014-09-14
+0.2.4 / 2016-05-20
 ==================
 
-  * Use the (new and improved) `crc` for crc32
+  * perf: enable strict mode
+  * perf: use for loop in parse
+  * perf: use string concatenation for serialization
 
-1.3.0 / 2014-08-29
+0.2.3 / 2015-10-25
 ==================
 
-  * Default strings to strong ETags
-  * Improve speed for weak ETags over 1KB
+  * Fix cookie `Max-Age` to never be a floating point number
 
-1.2.1 / 2014-08-29
+0.2.2 / 2015-09-17
 ==================
 
-  * Use the (much faster) `buffer-crc32` for crc32
+  * Fix regression when setting empty cookie value
+    - Ease the new restriction, which is just basic header-level validation
+  * Fix typo in invalid value errors
 
-1.2.0 / 2014-08-24
+0.2.1 / 2015-09-17
 ==================
 
-  * Add support for file stat objects
+  * Throw on invalid values provided to `serialize`
+    - Ensures the resulting string is a valid HTTP header value
 
-1.1.0 / 2014-08-24
+0.2.0 / 2015-08-13
 ==================
 
-  * Add fast-path for empty entity
-  * Add weak ETag generation
-  * Shrink size of generated ETags
+  * Add `firstPartyOnly` option
+  * Throw better error for invalid argument to parse
+  * perf: hoist regular expression
 
-1.0.1 / 2014-08-24
+0.1.5 / 2015-09-17
 ==================
 
-  * Fix behavior of string containing Unicode
+  * Fix regression when setting empty cookie value
+    - Ease the new restriction, which is just basic header-level validation
+  * Fix typo in invalid value errors
 
-1.0.0 / 2014-05-18
+0.1.4 / 2015-09-17
+==================
+
+  * Throw better error for invalid argument to parse
+  * Throw on invalid values provided to `serialize`
+    - Ensures the resulting string is a valid HTTP header value
+
+0.1.3 / 2015-05-19
+==================
+
+  * Reduce the scope of try-catch deopt
+  * Remove argument reassignments
+
+0.1.2 / 2014-04-16
+==================
+
+  * Remove unnecessary files from npm package
+
+0.1.1 / 2014-02-23
+==================
+
+  * Fix bad parse when cookie value contained a comma
+  * Fix support for `maxAge` of `0`
+
+0.1.0 / 2013-05-01
+==================
+
+  * Add `decode` option
+  * Add `encode` option
+
+0.0.6 / 2013-04-08
+==================
+
+  * Ignore cookie parts missing `=`
+
+0.0.5 / 2012-10-29
+==================
+
+  * Return raw cookie value if value unescape errors
+
+0.0.4 / 2012-06-21
+==================
+
+  * Use encode/decodeURIComponent for cookie encoding/decoding
+    - Improve server/client interoperability
+
+0.0.3 / 2012-06-06
+==================
+
+  * Only escape special characters per the cookie RFC
+
+0.0.2 / 2012-06-01
+==================
+
+  * Fix `maxAge` option to not throw error
+
+0.0.1 / 2012-05-28
+==================
+
+  * Add more tests
+
+0.0.0 / 2012-05-28
 ==================
 
   * Initial release
