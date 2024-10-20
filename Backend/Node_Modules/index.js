@@ -1,22 +1,19 @@
 'use strict';
 
-var $defineProperty = require('es-define-property');
+var test = require('tape');
+var hasProto = require('../');
 
-var hasPropertyDescriptors = function hasPropertyDescriptors() {
-	return !!$defineProperty;
-};
+test('hasProto', function (t) {
+	var result = hasProto();
+	t.equal(typeof result, 'boolean', 'returns a boolean (' + result + ')');
 
-hasPropertyDescriptors.hasArrayLengthDefineBug = function hasArrayLengthDefineBug() {
-	// node v0.6 has a bug where array lengths can be Set but not Defined
-	if (!$defineProperty) {
-		return null;
+	var obj = { __proto__: null };
+	if (result) {
+		t.notOk('toString' in obj, 'null object lacks toString');
+	} else {
+		t.ok('toString' in obj, 'without proto, null object has toString');
+		t.equal(obj.__proto__, null); // eslint-disable-line no-proto
 	}
-	try {
-		return $defineProperty([], 'length', { value: 1 }).length !== 1;
-	} catch (e) {
-		// In Firefox 4-22, defining length on an array throws an exception.
-		return true;
-	}
-};
 
-module.exports = hasPropertyDescriptors;
+	t.end();
+});
