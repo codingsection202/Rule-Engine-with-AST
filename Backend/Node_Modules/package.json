@@ -1,86 +1,59 @@
 {
-  "_from": "etag@~1.8.1",
-  "_id": "etag@1.8.1",
+  "_from": "escape-html@~1.0.3",
+  "_id": "escape-html@1.0.3",
   "_inBundle": false,
-  "_integrity": "sha512-aIL5Fx7mawVa300al2BnEE4iNvo1qETxLrPI/o05L7z6go7fCw1J6EQmbK4FmJ2AS7kgVF/KEZWufBfdClMcPg==",
-  "_location": "/etag",
+  "_integrity": "sha512-NiSupZ4OeuGwr68lGIeym/ksIZMJodUGOSCZ/FSnTxcrekbvqrgdUxlJOMpijaKZVjAJrWrGs/6Jy8OMuyj9ow==",
+  "_location": "/escape-html",
   "_phantomChildren": {},
   "_requested": {
     "type": "range",
     "registry": true,
-    "raw": "etag@~1.8.1",
-    "name": "etag",
-    "escapedName": "etag",
-    "rawSpec": "~1.8.1",
+    "raw": "escape-html@~1.0.3",
+    "name": "escape-html",
+    "escapedName": "escape-html",
+    "rawSpec": "~1.0.3",
     "saveSpec": null,
-    "fetchSpec": "~1.8.1"
+    "fetchSpec": "~1.0.3"
   },
   "_requiredBy": [
     "/express",
-    "/send"
+    "/finalhandler",
+    "/send",
+    "/serve-static"
   ],
-  "_resolved": "https://registry.npmjs.org/etag/-/etag-1.8.1.tgz",
-  "_shasum": "41ae2eeb65efa62268aebfea83ac7d79299b0887",
-  "_spec": "etag@~1.8.1",
+  "_resolved": "https://registry.npmjs.org/escape-html/-/escape-html-1.0.3.tgz",
+  "_shasum": "0258eae4d3d0c0974de1c169188ef0051d1d1988",
+  "_spec": "escape-html@~1.0.3",
   "_where": "/home/i_bojja.pravalika/Downloads/-Rule-Engine-with-AST-main/Backend/node_modules/express",
   "bugs": {
-    "url": "https://github.com/jshttp/etag/issues"
+    "url": "https://github.com/component/escape-html/issues"
   },
   "bundleDependencies": false,
-  "contributors": [
-    {
-      "name": "Douglas Christopher Wilson",
-      "email": "doug@somethingdoug.com"
-    },
-    {
-      "name": "David Björklund",
-      "email": "david.bjorklund@gmail.com"
-    }
-  ],
   "deprecated": false,
-  "description": "Create simple HTTP ETags",
+  "description": "Escape string for use in HTML",
   "devDependencies": {
     "beautify-benchmark": "0.2.4",
-    "benchmark": "2.1.4",
-    "eslint": "3.19.0",
-    "eslint-config-standard": "10.2.1",
-    "eslint-plugin-import": "2.7.0",
-    "eslint-plugin-markdown": "1.0.0-beta.6",
-    "eslint-plugin-node": "5.1.1",
-    "eslint-plugin-promise": "3.5.0",
-    "eslint-plugin-standard": "3.0.1",
-    "istanbul": "0.4.5",
-    "mocha": "1.21.5",
-    "safe-buffer": "5.1.1",
-    "seedrandom": "2.4.3"
-  },
-  "engines": {
-    "node": ">= 0.6"
+    "benchmark": "1.0.0"
   },
   "files": [
     "LICENSE",
-    "HISTORY.md",
-    "README.md",
+    "Readme.md",
     "index.js"
   ],
-  "homepage": "https://github.com/jshttp/etag#readme",
+  "homepage": "https://github.com/component/escape-html#readme",
   "keywords": [
-    "etag",
-    "http",
-    "res"
+    "escape",
+    "html",
+    "utility"
   ],
   "license": "MIT",
-  "name": "etag",
+  "name": "escape-html",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/jshttp/etag.git"
+    "url": "git+https://github.com/component/escape-html.git"
   },
   "scripts": {
-    "bench": "node benchmark/index.js",
-    "lint": "eslint --plugin markdown --ext js,md .",
-    "test": "mocha --reporter spec --bail --check-leaks test/",
-    "test-cov": "istanbul cover node_modules/mocha/bin/_mocha -- --reporter dot --check-leaks test/",
-    "test-travis": "istanbul cover node_modules/mocha/bin/_mocha --report lcovonly -- --reporter spec --check-leaks test/"
+    "bench": "node benchmark/index.js"
   },
-  "version": "1.8.1"
+  "version": "1.0.3"
 }
