@@ -1,75 +1,123 @@
 {
-  "_from": "brace-expansion@^1.1.7",
-  "_id": "brace-expansion@1.1.11",
+  "_from": "braces@~3.0.2",
+  "_id": "braces@3.0.3",
   "_inBundle": false,
-  "_integrity": "sha512-iCuPHDFgrHX7H2vEI/5xpz07zSHB00TpugqhmYtVmMO6518mCuRMoOYFldEBl0g187ufozdaHgWKcYFb61qGiA==",
-  "_location": "/brace-expansion",
+  "_integrity": "sha512-yQbXgO/OSZVD2IsiLlro+7Hf6Q18EJrKSEsdoMzKePKXct3gvD8oLcOQdIzGupr5Fj+EDe8gO/lxc1BzfMpxvA==",
+  "_location": "/braces",
   "_phantomChildren": {},
   "_requested": {
     "type": "range",
     "registry": true,
-    "raw": "brace-expansion@^1.1.7",
-    "name": "brace-expansion",
-    "escapedName": "brace-expansion",
-    "rawSpec": "^1.1.7",
+    "raw": "braces@~3.0.2",
+    "name": "braces",
+    "escapedName": "braces",
+    "rawSpec": "~3.0.2",
     "saveSpec": null,
-    "fetchSpec": "^1.1.7"
+    "fetchSpec": "~3.0.2"
   },
   "_requiredBy": [
-    "/minimatch"
+    "/chokidar"
   ],
-  "_resolved": "https://registry.npmjs.org/brace-expansion/-/brace-expansion-1.1.11.tgz",
-  "_shasum": "3c7fcbf529d87226f3d2f52b966ff5271eb441dd",
-  "_spec": "brace-expansion@^1.1.7",
-  "_where": "/home/i_bojja.pravalika/Downloads/-Rule-Engine-with-AST-main/Backend/node_modules/minimatch",
+  "_resolved": "https://registry.npmjs.org/braces/-/braces-3.0.3.tgz",
+  "_shasum": "490332f40919452272d55a8480adc0c441358789",
+  "_spec": "braces@~3.0.2",
+  "_where": "/home/i_bojja.pravalika/Downloads/-Rule-Engine-with-AST-main/Backend/node_modules/chokidar",
   "author": {
-    "name": "Julian Gruber",
-    "email": "mail@juliangruber.com",
-    "url": "http://juliangruber.com"
+    "name": "Jon Schlinkert",
+    "url": "https://github.com/jonschlinkert"
   },
   "bugs": {
-    "url": "https://github.com/juliangruber/brace-expansion/issues"
+    "url": "https://github.com/micromatch/braces/issues"
   },
   "bundleDependencies": false,
+  "contributors": [
+    {
+      "name": "Brian Woodward",
+      "url": "https://twitter.com/doowb"
+    },
+    {
+      "name": "Elan Shanker",
+      "url": "https://github.com/es128"
+    },
+    {
+      "name": "Eugene Sharygin",
+      "url": "https://github.com/eush77"
+    },
+    {
+      "name": "hemanth.hm",
+      "url": "http://h3manth.com"
+    },
+    {
+      "name": "Jon Schlinkert",
+      "url": "http://twitter.com/jonschlinkert"
+    }
+  ],
   "dependencies": {
-    "balanced-match": "^1.0.0",
-    "concat-map": "0.0.1"
+    "fill-range": "^7.1.1"
   },
   "deprecated": false,
-  "description": "Brace expansion as known from sh/bash",
+  "description": "Bash-like brace expansion, implemented in JavaScript. Safer than other brace expansion libs, with complete support for the Bash 4.3 braces specification, without sacrificing speed.",
   "devDependencies": {
-    "matcha": "^0.7.0",
-    "tape": "^4.6.0"
+    "ansi-colors": "^3.2.4",
+    "bash-path": "^2.0.1",
+    "gulp-format-md": "^2.0.0",
+    "mocha": "^6.1.1"
   },
-  "homepage": "https://github.com/juliangruber/brace-expansion",
-  "keywords": [],
+  "engines": {
+    "node": ">=8"
+  },
+  "files": [
+    "index.js",
+    "lib"
+  ],
+  "homepage": "https://github.com/micromatch/braces",
+  "keywords": [
+    "alpha",
+    "alphabetical",
+    "bash",
+    "brace",
+    "braces",
+    "expand",
+    "expansion",
+    "filepath",
+    "fill",
+    "fs",
+    "glob",
+    "globbing",
+    "letter",
+    "match",
+    "matches",
+    "matching",
+    "number",
+    "numerical",
+    "path",
+    "range",
+    "ranges",
+    "sh"
+  ],
   "license": "MIT",
   "main": "index.js",
-  "name": "brace-expansion",
+  "name": "braces",
   "repository": {
     "type": "git",
-    "url": "git://github.com/juliangruber/brace-expansion.git"
+    "url": "git+https://github.com/micromatch/braces.git"
   },
   "scripts": {
-    "bench": "matcha test/perf/bench.js",
-    "gentest": "bash test/generate.sh",
-    "test": "tape test/*.js"
+    "benchmark": "node benchmark",
+    "test": "mocha"
   },
-  "testling": {
-    "files": "test/*.js",
-    "browsers": [
-      "ie/8..latest",
-      "firefox/20..latest",
-      "firefox/nightly",
-      "chrome/25..latest",
-      "chrome/canary",
-      "opera/12..latest",
-      "opera/next",
-      "safari/5.1..latest",
-      "ipad/6.0..latest",
-      "iphone/6.0..latest",
-      "android-browser/4.2..latest"
+  "verb": {
+    "toc": false,
+    "layout": "default",
+    "tasks": [
+      "readme"
+    ],
+    "lint": {
+      "reflinks": true
+    },
+    "plugins": [
+      "gulp-format-md"
     ]
   },
-  "version": "1.1.11"
+  "version": "3.0.3"
 }
