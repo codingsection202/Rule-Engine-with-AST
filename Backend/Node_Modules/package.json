@@ -1,77 +1,62 @@
 {
-  "_from": "iconv-lite@0.4.24",
-  "_id": "iconv-lite@0.4.24",
+  "_from": "ignore-by-default@^1.0.1",
+  "_id": "ignore-by-default@1.0.1",
   "_inBundle": false,
-  "_integrity": "sha512-v3MXnZAcvnywkTUEZomIActle7RXXeedOR31wwl7VlyoXO4Qi9arvSenNQWne1TcRwhCL1HwLI21bEqdpj8/rA==",
-  "_location": "/iconv-lite",
+  "_integrity": "sha512-Ius2VYcGNk7T90CppJqcIkS5ooHUZyIQK+ClZfMfMNFEF9VSE73Fq+906u/CWu92x4gzZMWOwfFYckPObzdEbA==",
+  "_location": "/ignore-by-default",
   "_phantomChildren": {},
   "_requested": {
-    "type": "version",
+    "type": "range",
     "registry": true,
-    "raw": "iconv-lite@0.4.24",
-    "name": "iconv-lite",
-    "escapedName": "iconv-lite",
-    "rawSpec": "0.4.24",
+    "raw": "ignore-by-default@^1.0.1",
+    "name": "ignore-by-default",
+    "escapedName": "ignore-by-default",
+    "rawSpec": "^1.0.1",
     "saveSpec": null,
-    "fetchSpec": "0.4.24"
+    "fetchSpec": "^1.0.1"
   },
   "_requiredBy": [
-    "/body-parser",
-    "/raw-body"
+    "/nodemon"
   ],
-  "_resolved": "https://registry.npmjs.org/iconv-lite/-/iconv-lite-0.4.24.tgz",
-  "_shasum": "2022b4b25fbddc21d2f524974a474aafe733908b",
-  "_spec": "iconv-lite@0.4.24",
-  "_where": "/home/i_bojja.pravalika/Downloads/-Rule-Engine-with-AST-main/Backend/node_modules/body-parser",
+  "_resolved": "https://registry.npmjs.org/ignore-by-default/-/ignore-by-default-1.0.1.tgz",
+  "_shasum": "48ca6d72f6c6a3af00a9ad4ae6876be3889e2b09",
+  "_spec": "ignore-by-default@^1.0.1",
+  "_where": "/home/i_bojja.pravalika/Downloads/-Rule-Engine-with-AST-main/Backend/node_modules/nodemon",
   "author": {
-    "name": "Alexander Shtuchkin",
-    "email": "ashtuchkin@gmail.com"
-  },
-  "browser": {
-    "./lib/extend-node": false,
-    "./lib/streams": false
+    "name": "Mark Wubben",
+    "url": "https://novemberborn.net/"
   },
   "bugs": {
-    "url": "https://github.com/ashtuchkin/iconv-lite/issues"
+    "url": "https://github.com/novemberborn/ignore-by-default/issues"
   },
   "bundleDependencies": false,
-  "dependencies": {
-    "safer-buffer": ">= 2.1.2 < 3"
-  },
   "deprecated": false,
-  "description": "Convert character encodings in pure javascript.",
+  "description": "A list of directories you should ignore by default",
   "devDependencies": {
-    "async": "*",
-    "errto": "*",
-    "iconv": "*",
-    "istanbul": "*",
-    "mocha": "^3.1.0",
-    "request": "~2.87.0",
-    "semver": "*",
-    "unorm": "*"
+    "figures": "^1.4.0",
+    "standard": "^6.0.4"
   },
-  "engines": {
-    "node": ">=0.10.0"
-  },
-  "homepage": "https://github.com/ashtuchkin/iconv-lite",
-  "keywords": [
-    "iconv",
-    "convert",
-    "charset",
-    "icu"
+  "files": [
+    "index.js"
   ],
-  "license": "MIT",
-  "main": "./lib/index.js",
-  "name": "iconv-lite",
+  "homepage": "https://github.com/novemberborn/ignore-by-default#readme",
+  "keywords": [
+    "ignore",
+    "chokidar",
+    "watcher",
+    "exclude",
+    "glob",
+    "pattern"
+  ],
+  "license": "ISC",
+  "main": "index.js",
+  "name": "ignore-by-default",
   "repository": {
     "type": "git",
-    "url": "git://github.com/ashtuchkin/iconv-lite.git"
+    "url": "git+https://github.com/novemberborn/ignore-by-default.git"
   },
   "scripts": {
-    "coverage": "istanbul cover _mocha -- --grep .",
-    "coverage-open": "open coverage/lcov-report/index.html",
-    "test": "mocha --reporter spec --grep ."
+    "test": "standard && node test.js"
   },
-  "typings": "./lib/index.d.ts",
-  "version": "0.4.24"
+  "version": "1.0.1"
 }
