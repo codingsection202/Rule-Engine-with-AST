@@ -1,80 +1,128 @@
-# EE First
+# encodeurl
 
-[![NPM version][npm-image]][npm-url]
-[![Build status][travis-image]][travis-url]
-[![Test coverage][coveralls-image]][coveralls-url]
-[![License][license-image]][license-url]
-[![Downloads][downloads-image]][downloads-url]
-[![Gittip][gittip-image]][gittip-url]
+[![NPM Version][npm-image]][npm-url]
+[![NPM Downloads][downloads-image]][downloads-url]
+[![Node.js Version][node-version-image]][node-version-url]
+[![Build Status][travis-image]][travis-url]
+[![Test Coverage][coveralls-image]][coveralls-url]
 
-Get the first event in a set of event emitters and event pairs,
-then clean up after itself.
+Encode a URL to a percent-encoded form, excluding already-encoded sequences
 
-## Install
+## Installation
+
+This is a [Node.js](https://nodejs.org/en/) module available through the
+[npm registry](https://www.npmjs.com/). Installation is done using the
+[`npm install` command](https://docs.npmjs.com/getting-started/installing-npm-packages-locally):
 
 ```sh
-$ npm install ee-first
+$ npm install encodeurl
 ```
 
 ## API
 
 ```js
-var first = require('ee-first')
+var encodeUrl = require('encodeurl')
 ```
 
-### first(arr, listener)
+### encodeUrl(url)
 
-Invoke `listener` on the first event from the list specified in `arr`. `arr` is
-an array of arrays, with each array in the format `[ee, ...event]`. `listener`
-will be called only once, the first time any of the given events are emitted. If
-`error` is one of the listened events, then if that fires first, the `listener`
-will be given the `err` argument.
+Encode a URL to a percent-encoded form, excluding already-encoded sequences.
 
-The `listener` is invoked as `listener(err, ee, event, args)`, where `err` is the
-first argument emitted from an `error` event, if applicable; `ee` is the event
-emitter that fired; `event` is the string event name that fired; and `args` is an
-array of the arguments that were emitted on the event.
+This function will take an already-encoded URL and encode all the non-URL
+code points (as UTF-8 byte sequences). This function will not encode the
+"%" character unless it is not part of a valid sequence (`%20` will be
+left as-is, but `%foo` will be encoded as `%25foo`).
+
+This encode is meant to be "safe" and does not throw errors. It will try as
+hard as it can to properly encode the given URL, including replacing any raw,
+unpaired surrogate pairs with the Unicode replacement character prior to
+encoding.
+
+This function is _similar_ to the intrinsic function `encodeURI`, except it
+will not encode the `%` character if that is part of a valid sequence, will
+not encode `[` and `]` (for IPv6 hostnames) and will replace raw, unpaired
+surrogate pairs with the Unicode replacement character (instead of throwing).
+
+## Examples
+
+### Encode a URL containing user-controled data
 
 ```js
-var ee1 = new EventEmitter()
-var ee2 = new EventEmitter()
+var encodeUrl = require('encodeurl')
+var escapeHtml = require('escape-html')
 
-first([
-  [ee1, 'close', 'end', 'error'],
-  [ee2, 'error']
-], function (err, ee, event, args) {
-  // listener invoked
+http.createServer(function onRequest (req, res) {
+  // get encoded form of inbound url
+  var url = encodeUrl(req.url)
+
+  // create html message
+  var body = '<p>Location ' + escapeHtml(url) + ' not found</p>'
+
+  // send a 404
+  res.statusCode = 404
+  res.setHeader('Content-Type', 'text/html; charset=UTF-8')
+  res.setHeader('Content-Length', String(Buffer.byteLength(body, 'utf-8')))
+  res.end(body, 'utf-8')
 })
 ```
 
-#### .cancel()
-
-The group of listeners can be cancelled before being invoked and have all the event
-listeners removed from the underlying event emitters.
+### Encode a URL for use in a header field
 
 ```js
-var thunk = first([
-  [ee1, 'close', 'end', 'error'],
-  [ee2, 'error']
-], function (err, ee, event, args) {
-  // listener invoked
-})
+var encodeUrl = require('encodeurl')
+var escapeHtml = require('escape-html')
+var url = require('url')
 
-// cancel and clean up
-thunk.cancel()
+http.createServer(function onRequest (req, res) {
+  // parse inbound url
+  var href = url.parse(req)
+
+  // set new host for redirect
+  href.host = 'localhost'
+  href.protocol = 'https:'
+  href.slashes = true
+
+  // create location header
+  var location = encodeUrl(url.format(href))
+
+  // create html message
+  var body = '<p>Redirecting to new site: ' + escapeHtml(location) + '</p>'
+
+  // send a 301
+  res.statusCode = 301
+  res.setHeader('Content-Type', 'text/html; charset=UTF-8')
+  res.setHeader('Content-Length', String(Buffer.byteLength(body, 'utf-8')))
+  res.setHeader('Location', location)
+  res.end(body, 'utf-8')
+})
 ```
 
-[npm-image]: https://img.shields.io/npm/v/ee-first.svg?style=flat-square
-[npm-url]: https://npmjs.org/package/ee-first
-[github-tag]: http://img.shields.io/github/tag/jonathanong/ee-first.svg?style=flat-square
-[github-url]: https://github.com/jonathanong/ee-first/tags
-[travis-image]: https://img.shields.io/travis/jonathanong/ee-first.svg?style=flat-square
-[travis-url]: https://travis-ci.org/jonathanong/ee-first
-[coveralls-image]: https://img.shields.io/coveralls/jonathanong/ee-first.svg?style=flat-square
-[coveralls-url]: https://coveralls.io/r/jonathanong/ee-first?branch=master
-[license-image]: http://img.shields.io/npm/l/ee-first.svg?style=flat-square
-[license-url]: LICENSE.md
-[downloads-image]: http://img.shields.io/npm/dm/ee-first.svg?style=flat-square
-[downloads-url]: https://npmjs.org/package/ee-first
-[gittip-image]: https://img.shields.io/gittip/jonathanong.svg?style=flat-square
-[gittip-url]: https://www.gittip.com/jonathanong/
+## Testing
+
+```sh
+$ npm test
+$ npm run lint
+```
+
+## References
+
+- [RFC 3986: Uniform Resource Identifier (URI): Generic Syntax][rfc-3986]
+- [WHATWG URL Living Standard][whatwg-url]
+
+[rfc-3986]: https://tools.ietf.org/html/rfc3986
+[whatwg-url]: https://url.spec.whatwg.org/
+
+## License
+
+[MIT](LICENSE)
+
+[npm-image]: https://img.shields.io/npm/v/encodeurl.svg
+[npm-url]: https://npmjs.org/package/encodeurl
+[node-version-image]: https://img.shields.io/node/v/encodeurl.svg
+[node-version-url]: https://nodejs.org/en/download
+[travis-image]: https://img.shields.io/travis/pillarjs/encodeurl.svg
+[travis-url]: https://travis-ci.org/pillarjs/encodeurl
+[coveralls-image]: https://img.shields.io/coveralls/pillarjs/encodeurl.svg
+[coveralls-url]: https://coveralls.io/r/pillarjs/encodeurl?branch=master
+[downloads-image]: https://img.shields.io/npm/dm/encodeurl.svg
+[downloads-url]: https://npmjs.org/package/encodeurl
