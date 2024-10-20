@@ -1,33 +1,34 @@
 {
-  "_from": "cookie@0.4.1",
-  "_id": "cookie@0.4.1",
+  "_from": "cookie-parser@^1.4.6",
+  "_id": "cookie-parser@1.4.6",
   "_inBundle": false,
-  "_integrity": "sha512-ZwrFkGJxUR3EIoXtO+yVE69Eb7KlixbaeAWfBQB9vVsNn/o+Yw69gBWSSDK825hQNdN+wF8zELf3dFNl/kxkUA==",
-  "_location": "/cookie",
+  "_integrity": "sha512-z3IzaNjdwUC2olLIB5/ITd0/setiaFMLYiZJle7xg5Fe9KWAceil7xszYfHHBtDFYLSgJduS2Ty0P1uJdPDJeA==",
+  "_location": "/cookie-parser",
   "_phantomChildren": {},
   "_requested": {
-    "type": "version",
+    "type": "range",
     "registry": true,
-    "raw": "cookie@0.4.1",
-    "name": "cookie",
-    "escapedName": "cookie",
-    "rawSpec": "0.4.1",
+    "raw": "cookie-parser@^1.4.6",
+    "name": "cookie-parser",
+    "escapedName": "cookie-parser",
+    "rawSpec": "^1.4.6",
     "saveSpec": null,
-    "fetchSpec": "0.4.1"
+    "fetchSpec": "^1.4.6"
   },
   "_requiredBy": [
-    "/cookie-parser"
+    "/"
   ],
-  "_resolved": "https://registry.npmjs.org/cookie/-/cookie-0.4.1.tgz",
-  "_shasum": "afd713fe26ebd21ba95ceb61f9a8116e50a537d1",
-  "_spec": "cookie@0.4.1",
-  "_where": "/home/i_bojja.pravalika/Downloads/-Rule-Engine-with-AST-main/Backend/node_modules/cookie-parser",
+  "_resolved": "https://registry.npmjs.org/cookie-parser/-/cookie-parser-1.4.6.tgz",
+  "_shasum": "3ac3a7d35a7a03bbc7e365073a26074824214594",
+  "_spec": "cookie-parser@^1.4.6",
+  "_where": "/home/i_bojja.pravalika/Downloads/-Rule-Engine-with-AST-main/Backend",
   "author": {
-    "name": "Roman Shtylman",
-    "email": "shtylman@gmail.com"
+    "name": "TJ Holowaychuk",
+    "email": "tj@vision-media.ca",
+    "url": "http://tjholowaychuk.com"
   },
   "bugs": {
-    "url": "https://github.com/jshttp/cookie/issues"
+    "url": "https://github.com/expressjs/cookie-parser/issues"
   },
   "bundleDependencies": false,
   "contributors": [
@@ -36,43 +37,48 @@
       "email": "doug@somethingdoug.com"
     }
   ],
+  "dependencies": {
+    "cookie": "0.4.1",
+    "cookie-signature": "1.0.6"
+  },
   "deprecated": false,
-  "description": "HTTP server cookie parsing and serialization",
+  "description": "Parse HTTP request cookies",
   "devDependencies": {
-    "beautify-benchmark": "0.2.4",
-    "benchmark": "2.1.4",
-    "eslint": "6.8.0",
-    "eslint-plugin-markdown": "1.0.2",
-    "mocha": "7.1.1",
-    "nyc": "15.0.1"
+    "eslint": "7.32.0",
+    "eslint-config-standard": "14.1.1",
+    "eslint-plugin-import": "2.25.2",
+    "eslint-plugin-markdown": "2.2.1",
+    "eslint-plugin-node": "11.1.0",
+    "eslint-plugin-promise": "4.3.1",
+    "eslint-plugin-standard": "4.1.0",
+    "mocha": "9.1.3",
+    "nyc": "15.1.0",
+    "supertest": "6.1.6"
   },
   "engines": {
-    "node": ">= 0.6"
+    "node": ">= 0.8.0"
   },
   "files": [
-    "HISTORY.md",
     "LICENSE",
-    "README.md",
+    "HISTORY.md",
     "index.js"
   ],
-  "homepage": "https://github.com/jshttp/cookie#readme",
+  "homepage": "https://github.com/expressjs/cookie-parser#readme",
   "keywords": [
     "cookie",
-    "cookies"
+    "middleware"
   ],
   "license": "MIT",
-  "name": "cookie",
+  "name": "cookie-parser",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/jshttp/cookie.git"
+    "url": "git+https://github.com/expressjs/cookie-parser.git"
   },
   "scripts": {
-    "bench": "node benchmark/index.js",
-    "lint": "eslint --plugin markdown --ext js,md .",
-    "test": "mocha --reporter spec --bail --check-leaks --ui qunit test/",
-    "test-ci": "nyc --reporter=text npm test",
-    "test-cov": "nyc --reporter=html --reporter=text npm test",
-    "version": "node scripts/version-history.js && git add HISTORY.md"
+    "lint": "eslint .",
+    "test": "mocha --reporter spec --bail --check-leaks test/",
+    "test-ci": "nyc --reporter=lcov --reporter=text npm test",
+    "test-cov": "nyc --reporter=html --reporter=text npm test"
   },
-  "version": "0.4.1"
+  "version": "1.4.6"
 }

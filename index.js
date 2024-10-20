@@ -1,202 +1,182 @@
 /*!
- * cookie
- * Copyright(c) 2012-2014 Roman Shtylman
+ * cookie-parser
+ * Copyright(c) 2014 TJ Holowaychuk
  * Copyright(c) 2015 Douglas Christopher Wilson
  * MIT Licensed
  */
 
-'use strict';
+'use strict'
+
+/**
+ * Module dependencies.
+ * @private
+ */
+
+var cookie = require('cookie')
+var signature = require('cookie-signature')
 
 /**
  * Module exports.
  * @public
  */
 
-exports.parse = parse;
-exports.serialize = serialize;
+module.exports = cookieParser
+module.exports.JSONCookie = JSONCookie
+module.exports.JSONCookies = JSONCookies
+module.exports.signedCookie = signedCookie
+module.exports.signedCookies = signedCookies
 
 /**
- * Module variables.
- * @private
- */
-
-var decode = decodeURIComponent;
-var encode = encodeURIComponent;
-var pairSplitRegExp = /; */;
-
-/**
- * RegExp to match field-content in RFC 7230 sec 3.2
+ * Parse Cookie header and populate `req.cookies`
+ * with an object keyed by the cookie names.
  *
- * field-content = field-vchar [ 1*( SP / HTAB ) field-vchar ]
- * field-vchar   = VCHAR / obs-text
- * obs-text      = %x80-FF
- */
-
-var fieldContentRegExp = /^[\u0009\u0020-\u007e\u0080-\u00ff]+$/;
-
-/**
- * Parse a cookie header.
- *
- * Parse the given cookie header string into an object
- * The object has the various cookies as keys(names) => values
- *
- * @param {string} str
- * @param {object} [options]
- * @return {object}
+ * @param {string|array} [secret] A string (or array of strings) representing cookie signing secret(s).
+ * @param {Object} [options]
+ * @return {Function}
  * @public
  */
 
-function parse(str, options) {
-  if (typeof str !== 'string') {
-    throw new TypeError('argument str must be a string');
+function cookieParser (secret, options) {
+  var secrets = !secret || Array.isArray(secret)
+    ? (secret || [])
+    : [secret]
+
+  return function cookieParser (req, res, next) {
+    if (req.cookies) {
+      return next()
+    }
+
+    var cookies = req.headers.cookie
+
+    req.secret = secrets[0]
+    req.cookies = Object.create(null)
+    req.signedCookies = Object.create(null)
+
+    // no cookies
+    if (!cookies) {
+      return next()
+    }
+
+    req.cookies = cookie.parse(cookies, options)
+
+    // parse signed cookies
+    if (secrets.length !== 0) {
+      req.signedCookies = signedCookies(req.cookies, secrets)
+      req.signedCookies = JSONCookies(req.signedCookies)
+    }
+
+    // parse JSON cookies
+    req.cookies = JSONCookies(req.cookies)
+
+    next()
   }
-
-  var obj = {}
-  var opt = options || {};
-  var pairs = str.split(pairSplitRegExp);
-  var dec = opt.decode || decode;
-
-  for (var i = 0; i < pairs.length; i++) {
-    var pair = pairs[i];
-    var eq_idx = pair.indexOf('=');
-
-    // skip things that don't look like key=value
-    if (eq_idx < 0) {
-      continue;
-    }
-
-    var key = pair.substr(0, eq_idx).trim()
-    var val = pair.substr(++eq_idx, pair.length).trim();
-
-    // quoted values
-    if ('"' == val[0]) {
-      val = val.slice(1, -1);
-    }
-
-    // only assign once
-    if (undefined == obj[key]) {
-      obj[key] = tryDecode(val, dec);
-    }
-  }
-
-  return obj;
 }
 
 /**
- * Serialize data into a cookie header.
+ * Parse JSON cookie string.
  *
- * Serialize the a name value pair into a cookie string suitable for
- * http headers. An optional options object specified cookie parameters.
- *
- * serialize('foo', 'bar', { httpOnly: true })
- *   => "foo=bar; httpOnly"
- *
- * @param {string} name
- * @param {string} val
- * @param {object} [options]
- * @return {string}
+ * @param {String} str
+ * @return {Object} Parsed object or undefined if not json cookie
  * @public
  */
 
-function serialize(name, val, options) {
-  var opt = options || {};
-  var enc = opt.encode || encode;
-
-  if (typeof enc !== 'function') {
-    throw new TypeError('option encode is invalid');
+function JSONCookie (str) {
+  if (typeof str !== 'string' || str.substr(0, 2) !== 'j:') {
+    return undefined
   }
 
-  if (!fieldContentRegExp.test(name)) {
-    throw new TypeError('argument name is invalid');
-  }
-
-  var value = enc(val);
-
-  if (value && !fieldContentRegExp.test(value)) {
-    throw new TypeError('argument val is invalid');
-  }
-
-  var str = name + '=' + value;
-
-  if (null != opt.maxAge) {
-    var maxAge = opt.maxAge - 0;
-
-    if (isNaN(maxAge) || !isFinite(maxAge)) {
-      throw new TypeError('option maxAge is invalid')
-    }
-
-    str += '; Max-Age=' + Math.floor(maxAge);
-  }
-
-  if (opt.domain) {
-    if (!fieldContentRegExp.test(opt.domain)) {
-      throw new TypeError('option domain is invalid');
-    }
-
-    str += '; Domain=' + opt.domain;
-  }
-
-  if (opt.path) {
-    if (!fieldContentRegExp.test(opt.path)) {
-      throw new TypeError('option path is invalid');
-    }
-
-    str += '; Path=' + opt.path;
-  }
-
-  if (opt.expires) {
-    if (typeof opt.expires.toUTCString !== 'function') {
-      throw new TypeError('option expires is invalid');
-    }
-
-    str += '; Expires=' + opt.expires.toUTCString();
-  }
-
-  if (opt.httpOnly) {
-    str += '; HttpOnly';
-  }
-
-  if (opt.secure) {
-    str += '; Secure';
-  }
-
-  if (opt.sameSite) {
-    var sameSite = typeof opt.sameSite === 'string'
-      ? opt.sameSite.toLowerCase() : opt.sameSite;
-
-    switch (sameSite) {
-      case true:
-        str += '; SameSite=Strict';
-        break;
-      case 'lax':
-        str += '; SameSite=Lax';
-        break;
-      case 'strict':
-        str += '; SameSite=Strict';
-        break;
-      case 'none':
-        str += '; SameSite=None';
-        break;
-      default:
-        throw new TypeError('option sameSite is invalid');
-    }
-  }
-
-  return str;
-}
-
-/**
- * Try decoding a string using a decoding function.
- *
- * @param {string} str
- * @param {function} decode
- * @private
- */
-
-function tryDecode(str, decode) {
   try {
-    return decode(str);
-  } catch (e) {
-    return str;
+    return JSON.parse(str.slice(2))
+  } catch (err) {
+    return undefined
   }
+}
+
+/**
+ * Parse JSON cookies.
+ *
+ * @param {Object} obj
+ * @return {Object}
+ * @public
+ */
+
+function JSONCookies (obj) {
+  var cookies = Object.keys(obj)
+  var key
+  var val
+
+  for (var i = 0; i < cookies.length; i++) {
+    key = cookies[i]
+    val = JSONCookie(obj[key])
+
+    if (val) {
+      obj[key] = val
+    }
+  }
+
+  return obj
+}
+
+/**
+ * Parse a signed cookie string, return the decoded value.
+ *
+ * @param {String} str signed cookie string
+ * @param {string|array} secret
+ * @return {String} decoded value
+ * @public
+ */
+
+function signedCookie (str, secret) {
+  if (typeof str !== 'string') {
+    return undefined
+  }
+
+  if (str.substr(0, 2) !== 's:') {
+    return str
+  }
+
+  var secrets = !secret || Array.isArray(secret)
+    ? (secret || [])
+    : [secret]
+
+  for (var i = 0; i < secrets.length; i++) {
+    var val = signature.unsign(str.slice(2), secrets[i])
+
+    if (val !== false) {
+      return val
+    }
+  }
+
+  return false
+}
+
+/**
+ * Parse signed cookies, returning an object containing the decoded key/value
+ * pairs, while removing the signed key from obj.
+ *
+ * @param {Object} obj
+ * @param {string|array} secret
+ * @return {Object}
+ * @public
+ */
+
+function signedCookies (obj, secret) {
+  var cookies = Object.keys(obj)
+  var dec
+  var key
+  var ret = Object.create(null)
+  var val
+
+  for (var i = 0; i < cookies.length; i++) {
+    key = cookies[i]
+    val = obj[key]
+    dec = signedCookie(val, secret)
+
+    if (val !== dec) {
+      ret[key] = dec
+      delete obj[key]
+    }
+  }
+
+  return ret
 }

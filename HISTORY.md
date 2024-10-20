@@ -1,128 +1,100 @@
-0.4.1 / 2020-04-21
+1.4.6 / 2021-11-16
 ==================
 
-  * Fix `maxAge` option to reject invalid values
+  * deps: cookie@0.4.1
 
-0.4.0 / 2019-05-15
+1.4.5 / 2020-03-14
 ==================
 
-  * Add `SameSite=None` support
+  * deps: cookie@0.4.0
 
-0.3.1 / 2016-05-26
+1.4.4 / 2019-02-12
 ==================
 
-  * Fix `sameSite: true` to work with draft-7 clients
-    - `true` now sends `SameSite=Strict` instead of `SameSite`
+  * perf: normalize `secret` argument only once
 
-0.3.0 / 2016-05-26
+1.4.3 / 2016-05-26
 ==================
 
-  * Add `sameSite` option
-    - Replaces `firstPartyOnly` option, never implemented by browsers
-  * Improve error message when `encode` is not a function
-  * Improve error message when `expires` is not a `Date`
+  * deps: cookie@0.3.1
+    - perf: use for loop in parse
 
-0.2.4 / 2016-05-20
+1.4.2 / 2016-05-20
 ==================
 
+  * deps: cookie@0.2.4
+    - perf: enable strict mode
+    - perf: use for loop in parse
+    - perf: use string concatenation for serialization
+
+1.4.1 / 2016-01-11
+==================
+
+  * deps: cookie@0.2.3
   * perf: enable strict mode
-  * perf: use for loop in parse
-  * perf: use string concatination for serialization
 
-0.2.3 / 2015-10-25
+1.4.0 / 2015-09-18
 ==================
 
-  * Fix cookie `Max-Age` to never be a floating point number
+  * Accept array of secrets in addition to a single secret
+  * Fix `JSONCookie` to return `undefined` for non-string arguments
+  * Fix `signedCookie` to return `undefined` for non-string arguments
+  * deps: cookie@0.2.2
 
-0.2.2 / 2015-09-17
+1.3.5 / 2015-05-19
 ==================
 
-  * Fix regression when setting empty cookie value
-    - Ease the new restriction, which is just basic header-level validation
-  * Fix typo in invalid value errors
+  * deps: cookie@0.1.3
+    - Slight optimizations
 
-0.2.1 / 2015-09-17
+1.3.4 / 2015-02-15
 ==================
 
-  * Throw on invalid values provided to `serialize`
-    - Ensures the resulting string is a valid HTTP header value
+  * deps: cookie-signature@1.0.6
 
-0.2.0 / 2015-08-13
+1.3.3 / 2014-09-05
 ==================
 
-  * Add `firstPartyOnly` option
-  * Throw better error for invalid argument to parse
-  * perf: hoist regular expression
+  * deps: cookie-signature@1.0.5
 
-0.1.5 / 2015-09-17
+1.3.2 / 2014-06-26
 ==================
 
-  * Fix regression when setting empty cookie value
-    - Ease the new restriction, which is just basic header-level validation
-  * Fix typo in invalid value errors
+  * deps: cookie-signature@1.0.4
+    - fix for timing attacks
 
-0.1.4 / 2015-09-17
+1.3.1 / 2014-06-17
 ==================
 
-  * Throw better error for invalid argument to parse
-  * Throw on invalid values provided to `serialize`
-    - Ensures the resulting string is a valid HTTP header value
+  * actually export `signedCookie`
 
-0.1.3 / 2015-05-19
+1.3.0 / 2014-06-17
 ==================
 
-  * Reduce the scope of try-catch deopt
-  * Remove argument reassignments
+  * add `signedCookie` export for single cookie unsigning
 
-0.1.2 / 2014-04-16
+1.2.0 / 2014-06-17
 ==================
 
-  * Remove unnecessary files from npm package
+  * export parsing functions
+  * `req.cookies` and `req.signedCookies` are now plain objects
+  * slightly faster parsing of many cookies
 
-0.1.1 / 2014-02-23
+1.1.0 / 2014-05-12
 ==================
 
-  * Fix bad parse when cookie value contained a comma
-  * Fix support for `maxAge` of `0`
+  * Support for NodeJS version 0.8
+  * deps: cookie@0.1.2
+    - Fix for maxAge == 0
+    - made compat with expires field
+    - tweak maxAge NaN error message
 
-0.1.0 / 2013-05-01
+1.0.1 / 2014-02-20
 ==================
 
-  * Add `decode` option
-  * Add `encode` option
+  * add missing dependencies
 
-0.0.6 / 2013-04-08
+1.0.0 / 2014-02-15
 ==================
 
-  * Ignore cookie parts missing `=`
-
-0.0.5 / 2012-10-29
-==================
-
-  * Return raw cookie value if value unescape errors
-
-0.0.4 / 2012-06-21
-==================
-
-  * Use encode/decodeURIComponent for cookie encoding/decoding
-    - Improve server/client interoperability
-
-0.0.3 / 2012-06-06
-==================
-
-  * Only escape special characters per the cookie RFC
-
-0.0.2 / 2012-06-01
-==================
-
-  * Fix `maxAge` option to not throw error
-
-0.0.1 / 2012-05-28
-==================
-
-  * Add more tests
-
-0.0.0 / 2012-05-28
-==================
-
-  * Initial release
+  * Genesis from `connect`
