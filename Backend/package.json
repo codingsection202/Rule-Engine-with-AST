@@ -1,96 +1,75 @@
 {
-  "_from": "body-parser@^1.20.2",
-  "_id": "body-parser@1.20.2",
+  "_from": "brace-expansion@^1.1.7",
+  "_id": "brace-expansion@1.1.11",
   "_inBundle": false,
-  "_integrity": "sha512-ml9pReCu3M61kGlqoTm2umSXTlRTuGTx0bfYj+uIUKKYycG5NtSbeetV3faSU6R7ajOPw0g/J1PvK4qNy7s5bA==",
-  "_location": "/body-parser",
+  "_integrity": "sha512-iCuPHDFgrHX7H2vEI/5xpz07zSHB00TpugqhmYtVmMO6518mCuRMoOYFldEBl0g187ufozdaHgWKcYFb61qGiA==",
+  "_location": "/brace-expansion",
   "_phantomChildren": {},
   "_requested": {
     "type": "range",
     "registry": true,
-    "raw": "body-parser@^1.20.2",
-    "name": "body-parser",
-    "escapedName": "body-parser",
-    "rawSpec": "^1.20.2",
+    "raw": "brace-expansion@^1.1.7",
+    "name": "brace-expansion",
+    "escapedName": "brace-expansion",
+    "rawSpec": "^1.1.7",
     "saveSpec": null,
-    "fetchSpec": "^1.20.2"
+    "fetchSpec": "^1.1.7"
   },
   "_requiredBy": [
-    "/",
-    "/express"
+    "/minimatch"
   ],
-  "_resolved": "https://registry.npmjs.org/body-parser/-/body-parser-1.20.2.tgz",
-  "_shasum": "6feb0e21c4724d06de7ff38da36dad4f57a747fd",
-  "_spec": "body-parser@^1.20.2",
-  "_where": "/home/i_bojja.pravalika/Downloads/-Rule-Engine-with-AST-main/Backend",
+  "_resolved": "https://registry.npmjs.org/brace-expansion/-/brace-expansion-1.1.11.tgz",
+  "_shasum": "3c7fcbf529d87226f3d2f52b966ff5271eb441dd",
+  "_spec": "brace-expansion@^1.1.7",
+  "_where": "/home/i_bojja.pravalika/Downloads/-Rule-Engine-with-AST-main/Backend/node_modules/minimatch",
+  "author": {
+    "name": "Julian Gruber",
+    "email": "mail@juliangruber.com",
+    "url": "http://juliangruber.com"
+  },
   "bugs": {
-    "url": "https://github.com/expressjs/body-parser/issues"
+    "url": "https://github.com/juliangruber/brace-expansion/issues"
   },
   "bundleDependencies": false,
-  "contributors": [
-    {
-      "name": "Douglas Christopher Wilson",
-      "email": "doug@somethingdoug.com"
-    },
-    {
-      "name": "Jonathan Ong",
-      "email": "me@jongleberry.com",
-      "url": "http://jongleberry.com"
-    }
-  ],
   "dependencies": {
-    "bytes": "3.1.2",
-    "content-type": "~1.0.5",
-    "debug": "2.6.9",
-    "depd": "2.0.0",
-    "destroy": "1.2.0",
-    "http-errors": "2.0.0",
-    "iconv-lite": "0.4.24",
-    "on-finished": "2.4.1",
-    "qs": "6.11.0",
-    "raw-body": "2.5.2",
-    "type-is": "~1.6.18",
-    "unpipe": "1.0.0"
+    "balanced-match": "^1.0.0",
+    "concat-map": "0.0.1"
   },
   "deprecated": false,
-  "description": "Node.js body parsing middleware",
+  "description": "Brace expansion as known from sh/bash",
   "devDependencies": {
-    "eslint": "8.34.0",
-    "eslint-config-standard": "14.1.1",
-    "eslint-plugin-import": "2.27.5",
-    "eslint-plugin-markdown": "3.0.0",
-    "eslint-plugin-node": "11.1.0",
-    "eslint-plugin-promise": "6.1.1",
-    "eslint-plugin-standard": "4.1.0",
-    "methods": "1.1.2",
-    "mocha": "10.2.0",
-    "nyc": "15.1.0",
-    "safe-buffer": "5.2.1",
-    "supertest": "6.3.3"
+    "matcha": "^0.7.0",
+    "tape": "^4.6.0"
   },
-  "engines": {
-    "node": ">= 0.8",
-    "npm": "1.2.8000 || >= 1.4.16"
-  },
-  "files": [
-    "lib/",
-    "LICENSE",
-    "HISTORY.md",
-    "SECURITY.md",
-    "index.js"
-  ],
-  "homepage": "https://github.com/expressjs/body-parser#readme",
+  "homepage": "https://github.com/juliangruber/brace-expansion",
+  "keywords": [],
   "license": "MIT",
-  "name": "body-parser",
+  "main": "index.js",
+  "name": "brace-expansion",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/expressjs/body-parser.git"
+    "url": "git://github.com/juliangruber/brace-expansion.git"
   },
   "scripts": {
-    "lint": "eslint .",
-    "test": "mocha --require test/support/env --reporter spec --check-leaks --bail test/",
-    "test-ci": "nyc --reporter=lcov --reporter=text npm test",
-    "test-cov": "nyc --reporter=html --reporter=text npm test"
+    "bench": "matcha test/perf/bench.js",
+    "gentest": "bash test/generate.sh",
+    "test": "tape test/*.js"
   },
-  "version": "1.20.2"
+  "testling": {
+    "files": "test/*.js",
+    "browsers": [
+      "ie/8..latest",
+      "firefox/20..latest",
+      "firefox/nightly",
+      "chrome/25..latest",
+      "chrome/canary",
+      "opera/12..latest",
+      "opera/next",
+      "safari/5.1..latest",
+      "ipad/6.0..latest",
+      "iphone/6.0..latest",
+      "android-browser/4.2..latest"
+    ]
+  },
+  "version": "1.1.11"
 }
