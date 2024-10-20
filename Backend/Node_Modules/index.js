@@ -1,35 +1,16 @@
 'use strict';
 
-var test = require('tape');
-var gOPD = require('../');
+var GetIntrinsic = require('get-intrinsic');
 
-test('gOPD', function (t) {
-	t.test('supported', { skip: !gOPD }, function (st) {
-		st.equal(typeof gOPD, 'function', 'is a function');
+var $gOPD = GetIntrinsic('%Object.getOwnPropertyDescriptor%', true);
 
-		var obj = { x: 1 };
-		st.ok('x' in obj, 'property exists');
+if ($gOPD) {
+	try {
+		$gOPD([], 'length');
+	} catch (e) {
+		// IE 8 has a broken gOPD
+		$gOPD = null;
+	}
+}
 
-		var desc = gOPD(obj, 'x');
-		st.deepEqual(
-			desc,
-			{
-				configurable: true,
-				enumerable: true,
-				value: 1,
-				writable: true
-			},
-			'descriptor is as expected'
-		);
-
-		st.end();
-	});
-
-	t.test('not supported', { skip: gOPD }, function (st) {
-		st.notOk(gOPD, 'is falsy');
-
-		st.end();
-	});
-
-	t.end();
-});
+module.exports = $gOPD;
