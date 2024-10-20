@@ -1,100 +1,58 @@
-1.4.6 / 2021-11-16
+2.8.5 / 2018-11-04
 ==================
 
-  * deps: cookie@0.4.1
+  * Fix setting `maxAge` option to `0`
 
-1.4.5 / 2020-03-14
+2.8.4 / 2017-07-12
 ==================
 
-  * deps: cookie@0.4.0
+  * Work-around Safari bug in default pre-flight response
 
-1.4.4 / 2019-02-12
+2.8.3 / 2017-03-29
 ==================
 
-  * perf: normalize `secret` argument only once
+  * Fix error when options delegate missing `methods` option
 
-1.4.3 / 2016-05-26
+2.8.2 / 2017-03-28
 ==================
 
-  * deps: cookie@0.3.1
-    - perf: use for loop in parse
+  * Fix error when frozen options are passed
+  * Send "Vary: Origin" when using regular expressions
+  * Send "Vary: Access-Control-Request-Headers" when dynamic `allowedHeaders`
 
-1.4.2 / 2016-05-20
+2.8.1 / 2016-09-08
 ==================
 
-  * deps: cookie@0.2.4
-    - perf: enable strict mode
-    - perf: use for loop in parse
-    - perf: use string concatenation for serialization
+This release only changed documentation.
 
-1.4.1 / 2016-01-11
+2.8.0 / 2016-08-23
 ==================
 
-  * deps: cookie@0.2.3
-  * perf: enable strict mode
+  * Add `optionsSuccessStatus` option
 
-1.4.0 / 2015-09-18
+2.7.2 / 2016-08-23
 ==================
 
-  * Accept array of secrets in addition to a single secret
-  * Fix `JSONCookie` to return `undefined` for non-string arguments
-  * Fix `signedCookie` to return `undefined` for non-string arguments
-  * deps: cookie@0.2.2
+  * Fix error when Node.js running in strict mode
 
-1.3.5 / 2015-05-19
+2.7.1 / 2015-05-28
 ==================
 
-  * deps: cookie@0.1.3
-    - Slight optimizations
+  * Move module into expressjs organization
 
-1.3.4 / 2015-02-15
+2.7.0 / 2015-05-28
 ==================
 
-  * deps: cookie-signature@1.0.6
+  * Allow array of matching condition as `origin` option
+  * Allow regular expression as `origin` option
 
-1.3.3 / 2014-09-05
+2.6.1 / 2015-05-28
 ==================
 
-  * deps: cookie-signature@1.0.5
+  * Update `license` in package.json
 
-1.3.2 / 2014-06-26
+2.6.0 / 2015-04-27
 ==================
 
-  * deps: cookie-signature@1.0.4
-    - fix for timing attacks
-
-1.3.1 / 2014-06-17
-==================
-
-  * actually export `signedCookie`
-
-1.3.0 / 2014-06-17
-==================
-
-  * add `signedCookie` export for single cookie unsigning
-
-1.2.0 / 2014-06-17
-==================
-
-  * export parsing functions
-  * `req.cookies` and `req.signedCookies` are now plain objects
-  * slightly faster parsing of many cookies
-
-1.1.0 / 2014-05-12
-==================
-
-  * Support for NodeJS version 0.8
-  * deps: cookie@0.1.2
-    - Fix for maxAge == 0
-    - made compat with expires field
-    - tweak maxAge NaN error message
-
-1.0.1 / 2014-02-20
-==================
-
-  * add missing dependencies
-
-1.0.0 / 2014-02-15
-==================
-
-  * Genesis from `connect`
+  * Add `preflightContinue` option
+  * Fix "Vary: Origin" header added for "*"

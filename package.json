@@ -1,58 +1,77 @@
 {
-  "_from": "cookie-signature@1.0.6",
-  "_id": "cookie-signature@1.0.6",
+  "_from": "cors@^2.8.5",
+  "_id": "cors@2.8.5",
   "_inBundle": false,
-  "_integrity": "sha512-QADzlaHc8icV8I7vbaJXJwod9HWYp8uCqf1xa4OfNu1T7JVxQIrUgOWtHdNDtPiywmFbiS12VjotIXLrKM3orQ==",
-  "_location": "/cookie-signature",
+  "_integrity": "sha512-KIHbLJqu73RGr/hnbrO9uBeixNGuvSQjul/jdFvS/KFSIH1hWVd1ng7zOHx+YrEfInLG7q4n6GHQ9cDtxv/P6g==",
+  "_location": "/cors",
   "_phantomChildren": {},
   "_requested": {
-    "type": "version",
+    "type": "range",
     "registry": true,
-    "raw": "cookie-signature@1.0.6",
-    "name": "cookie-signature",
-    "escapedName": "cookie-signature",
-    "rawSpec": "1.0.6",
+    "raw": "cors@^2.8.5",
+    "name": "cors",
+    "escapedName": "cors",
+    "rawSpec": "^2.8.5",
     "saveSpec": null,
-    "fetchSpec": "1.0.6"
+    "fetchSpec": "^2.8.5"
   },
   "_requiredBy": [
-    "/cookie-parser",
-    "/express"
+    "/"
   ],
-  "_resolved": "https://registry.npmjs.org/cookie-signature/-/cookie-signature-1.0.6.tgz",
-  "_shasum": "e303a882b342cc3ee8ca513a79999734dab3ae2c",
-  "_spec": "cookie-signature@1.0.6",
-  "_where": "/home/i_bojja.pravalika/Downloads/-Rule-Engine-with-AST-main/Backend/node_modules/cookie-parser",
+  "_resolved": "https://registry.npmjs.org/cors/-/cors-2.8.5.tgz",
+  "_shasum": "eac11da51592dd86b9f06f6e7ac293b3df875d29",
+  "_spec": "cors@^2.8.5",
+  "_where": "/home/i_bojja.pravalika/Downloads/-Rule-Engine-with-AST-main/Backend",
   "author": {
-    "name": "TJ Holowaychuk",
-    "email": "tj@learnboost.com"
+    "name": "Troy Goode",
+    "email": "troygoode@gmail.com",
+    "url": "https://github.com/troygoode/"
   },
   "bugs": {
-    "url": "https://github.com/visionmedia/node-cookie-signature/issues"
+    "url": "https://github.com/expressjs/cors/issues"
   },
   "bundleDependencies": false,
-  "dependencies": {},
-  "deprecated": false,
-  "description": "Sign and unsign cookies",
-  "devDependencies": {
-    "mocha": "*",
-    "should": "*"
+  "dependencies": {
+    "object-assign": "^4",
+    "vary": "^1"
   },
-  "homepage": "https://github.com/visionmedia/node-cookie-signature#readme",
+  "deprecated": false,
+  "description": "Node.js CORS middleware",
+  "devDependencies": {
+    "after": "0.8.2",
+    "eslint": "2.13.1",
+    "express": "4.16.3",
+    "mocha": "5.2.0",
+    "nyc": "13.1.0",
+    "supertest": "3.3.0"
+  },
+  "engines": {
+    "node": ">= 0.10"
+  },
+  "files": [
+    "lib/index.js",
+    "CONTRIBUTING.md",
+    "HISTORY.md",
+    "LICENSE",
+    "README.md"
+  ],
+  "homepage": "https://github.com/expressjs/cors#readme",
   "keywords": [
-    "cookie",
-    "sign",
-    "unsign"
+    "cors",
+    "express",
+    "connect",
+    "middleware"
   ],
   "license": "MIT",
-  "main": "index",
-  "name": "cookie-signature",
+  "main": "./lib/index.js",
+  "name": "cors",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/visionmedia/node-cookie-signature.git"
+    "url": "git+https://github.com/expressjs/cors.git"
   },
   "scripts": {
-    "test": "mocha --require should --reporter spec"
+    "lint": "eslint lib test",
+    "test": "npm run lint && nyc --reporter=html --reporter=text mocha --require test/support/env"
   },
-  "version": "1.0.6"
+  "version": "2.8.5"
 }
