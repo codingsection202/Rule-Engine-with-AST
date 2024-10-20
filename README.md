@@ -1,67 +1,71 @@
-# define-data-property <sup>[![Version Badge][npm-version-svg]][package-url]</sup>
+# get-intrinsic <sup>[![Version Badge][npm-version-svg]][package-url]</sup>
 
 [![github actions][actions-image]][actions-url]
 [![coverage][codecov-image]][codecov-url]
+[![dependency status][deps-svg]][deps-url]
+[![dev dependency status][dev-deps-svg]][dev-deps-url]
 [![License][license-image]][license-url]
 [![Downloads][downloads-image]][downloads-url]
 
 [![npm badge][npm-badge-png]][package-url]
 
-Define a data property on an object. Will fall back to assignment in an engine without descriptors.
+Get and robustly cache all JS language-level intrinsics at first require time.
 
-The three `non*` argument can also be passed `null`, which will use the existing state if available.
+See the syntax described [in the JS spec](https://tc39.es/ecma262/#sec-well-known-intrinsic-objects) for reference.
 
-The `loose` argument will mean that if you attempt to set a non-normal data property, in an environment without descriptor support, it will fall back to normal assignment.
+## Example
 
-## Usage
-
-```javascript
-var defineDataProperty = require('define-data-property');
+```js
+var GetIntrinsic = require('get-intrinsic');
 var assert = require('assert');
 
-var obj = {};
-defineDataProperty(obj, 'key', 'value');
-defineDataProperty(
-	obj,
-	'key2',
-	'value',
-	true, // nonEnumerable, optional
-	false, // nonWritable, optional
-	true, // nonConfigurable, optional
-	false // loose, optional
-);
+// static methods
+assert.equal(GetIntrinsic('%Math.pow%'), Math.pow);
+assert.equal(Math.pow(2, 3), 8);
+assert.equal(GetIntrinsic('%Math.pow%')(2, 3), 8);
+delete Math.pow;
+assert.equal(GetIntrinsic('%Math.pow%')(2, 3), 8);
 
-assert.deepEqual(
-	Object.getOwnPropertyDescriptors(obj),
-	{
-		key: {
-			configurable: true,
-			enumerable: true,
-			value: 'value',
-			writable: true,
-		},
-		key2: {
-			configurable: false,
-			enumerable: false,
-			value: 'value',
-			writable: true,
-		},
-	}
-);
+// instance methods
+var arr = [1];
+assert.equal(GetIntrinsic('%Array.prototype.push%'), Array.prototype.push);
+assert.deepEqual(arr, [1]);
+
+arr.push(2);
+assert.deepEqual(arr, [1, 2]);
+
+GetIntrinsic('%Array.prototype.push%').call(arr, 3);
+assert.deepEqual(arr, [1, 2, 3]);
+
+delete Array.prototype.push;
+GetIntrinsic('%Array.prototype.push%').call(arr, 4);
+assert.deepEqual(arr, [1, 2, 3, 4]);
+
+// missing features
+delete JSON.parse; // to simulate a real intrinsic that is missing in the environment
+assert.throws(() => GetIntrinsic('%JSON.parse%'));
+assert.equal(undefined, GetIntrinsic('%JSON.parse%', true));
 ```
 
-[package-url]: https://npmjs.org/package/define-data-property
-[npm-version-svg]: https://versionbadg.es/ljharb/define-data-property.svg
-[deps-svg]: https://david-dm.org/ljharb/define-data-property.svg
-[deps-url]: https://david-dm.org/ljharb/define-data-property
-[dev-deps-svg]: https://david-dm.org/ljharb/define-data-property/dev-status.svg
-[dev-deps-url]: https://david-dm.org/ljharb/define-data-property#info=devDependencies
-[npm-badge-png]: https://nodei.co/npm/define-data-property.png?downloads=true&stars=true
-[license-image]: https://img.shields.io/npm/l/define-data-property.svg
+## Tests
+Simply clone the repo, `npm install`, and run `npm test`
+
+## Security
+
+Please email [@ljharb](https://github.com/ljharb) or see https://tidelift.com/security if you have a potential security vulnerability to report.
+
+[package-url]: https://npmjs.org/package/get-intrinsic
+[npm-version-svg]: https://versionbadg.es/ljharb/get-intrinsic.svg
+[deps-svg]: https://david-dm.org/ljharb/get-intrinsic.svg
+[deps-url]: https://david-dm.org/ljharb/get-intrinsic
+[dev-deps-svg]: https://david-dm.org/ljharb/get-intrinsic/dev-status.svg
+[dev-deps-url]: https://david-dm.org/ljharb/get-intrinsic#info=devDependencies
+[npm-badge-png]: https://nodei.co/npm/get-intrinsic.png?downloads=true&stars=true
+[license-image]: https://img.shields.io/npm/l/get-intrinsic.svg
 [license-url]: LICENSE
-[downloads-image]: https://img.shields.io/npm/dm/define-data-property.svg
-[downloads-url]: https://npm-stat.com/charts.html?package=define-data-property
-[codecov-image]: https://codecov.io/gh/ljharb/define-data-property/branch/main/graphs/badge.svg
-[codecov-url]: https://app.codecov.io/gh/ljharb/define-data-property/
-[actions-image]: https://img.shields.io/endpoint?url=https://github-actions-badge-u3jn4tfpocch.runkit.sh/ljharb/define-data-property
-[actions-url]: https://github.com/ljharb/define-data-property/actions
+[downloads-image]: https://img.shields.io/npm/dm/get-intrinsic.svg
+[downloads-url]: https://npm-stat.com/charts.html?package=get-intrinsic
+[codecov-image]: https://codecov.io/gh/ljharb/get-intrinsic/branch/main/graphs/badge.svg
+[codecov-url]: https://app.codecov.io/gh/ljharb/get-intrinsic/
+[actions-image]: https://img.shields.io/endpoint?url=https://github-actions-badge-u3jn4tfpocch.runkit.sh/ljharb/get-intrinsic
+[actions-url]: https://github.com/ljharb/get-intrinsic/actions

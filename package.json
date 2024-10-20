@@ -1,27 +1,31 @@
 {
-  "_from": "define-data-property@^1.1.4",
-  "_id": "define-data-property@1.1.4",
+  "_from": "get-intrinsic@^1.2.4",
+  "_id": "get-intrinsic@1.2.4",
   "_inBundle": false,
-  "_integrity": "sha512-rBMvIzlpA8v6E+SJZoo++HAYqsLrkg7MSfIinMPFhmkorw7X+dOXVJQs+QT69zGkzMyfDnIMN2Wid1+NbL3T+A==",
-  "_location": "/define-data-property",
+  "_integrity": "sha512-5uYhsJH8VJBTv7oslg4BznJYhDoRI6waYCxMmCdnTrcCrHA/fCFKoTFz2JKKE0HdDFUF7/oQuhzumXJK7paBRQ==",
+  "_location": "/get-intrinsic",
   "_phantomChildren": {},
   "_requested": {
     "type": "range",
     "registry": true,
-    "raw": "define-data-property@^1.1.4",
-    "name": "define-data-property",
-    "escapedName": "define-data-property",
-    "rawSpec": "^1.1.4",
+    "raw": "get-intrinsic@^1.2.4",
+    "name": "get-intrinsic",
+    "escapedName": "get-intrinsic",
+    "rawSpec": "^1.2.4",
     "saveSpec": null,
-    "fetchSpec": "^1.1.4"
+    "fetchSpec": "^1.2.4"
   },
   "_requiredBy": [
-    "/set-function-length"
+    "/call-bind",
+    "/es-define-property",
+    "/gopd",
+    "/set-function-length",
+    "/side-channel"
   ],
-  "_resolved": "https://registry.npmjs.org/define-data-property/-/define-data-property-1.1.4.tgz",
-  "_shasum": "894dc141bb7d3060ae4366f6a0107e68fbe48c5e",
-  "_spec": "define-data-property@^1.1.4",
-  "_where": "/home/i_bojja.pravalika/Downloads/-Rule-Engine-with-AST-main/Backend/node_modules/set-function-length",
+  "_resolved": "https://registry.npmjs.org/get-intrinsic/-/get-intrinsic-1.2.4.tgz",
+  "_shasum": "e385f5a4b5227d449c3eabbad05494ef0abbeadd",
+  "_spec": "get-intrinsic@^1.2.4",
+  "_where": "/home/i_bojja.pravalika/Downloads/-Rule-Engine-with-AST-main/Backend/node_modules/side-channel",
   "author": {
     "name": "Jordan Harband",
     "email": "ljharb@gmail.com"
@@ -35,44 +39,38 @@
     "hideCredit": true
   },
   "bugs": {
-    "url": "https://github.com/ljharb/define-data-property/issues"
+    "url": "https://github.com/ljharb/get-intrinsic/issues"
   },
   "bundleDependencies": false,
   "dependencies": {
-    "es-define-property": "^1.0.0",
     "es-errors": "^1.3.0",
-    "gopd": "^1.0.1"
+    "function-bind": "^1.1.2",
+    "has-proto": "^1.0.1",
+    "has-symbols": "^1.0.3",
+    "hasown": "^2.0.0"
   },
   "deprecated": false,
-  "description": "Define a data property on an object. Will fall back to assignment in an engine without descriptors.",
+  "description": "Get and robustly cache all JS language-level intrinsics at first require time",
   "devDependencies": {
     "@ljharb/eslint-config": "^21.1.0",
-    "@types/call-bind": "^1.0.5",
-    "@types/define-properties": "^1.1.5",
-    "@types/es-value-fixtures": "^1.4.4",
-    "@types/for-each": "^0.3.3",
-    "@types/get-intrinsic": "^1.2.2",
-    "@types/gopd": "^1.0.3",
-    "@types/has-property-descriptors": "^1.0.3",
-    "@types/object-inspect": "^1.8.4",
-    "@types/object.getownpropertydescriptors": "^2.1.4",
-    "@types/tape": "^5.6.4",
     "aud": "^2.0.4",
     "auto-changelog": "^2.4.0",
+    "call-bind": "^1.0.5",
+    "es-abstract": "^1.22.3",
     "es-value-fixtures": "^1.4.2",
     "eslint": "=8.8.0",
     "evalmd": "^0.0.19",
     "for-each": "^0.3.3",
-    "hasown": "^2.0.1",
-    "in-publish": "^2.0.1",
+    "gopd": "^1.0.1",
+    "make-async-function": "^1.0.0",
+    "make-async-generator-function": "^1.0.0",
+    "make-generator-function": "^2.0.0",
+    "mock-property": "^1.0.3",
     "npmignore": "^0.3.1",
     "nyc": "^10.3.2",
     "object-inspect": "^1.13.1",
-    "object.getownpropertydescriptors": "^2.1.7",
-    "reflect.ownkeys": "^1.1.4",
     "safe-publish-latest": "^2.0.0",
-    "tape": "^5.7.4",
-    "typescript": "next"
+    "tape": "^5.7.4"
   },
   "engines": {
     "node": ">= 0.4"
@@ -84,35 +82,30 @@
   "funding": {
     "url": "https://github.com/sponsors/ljharb"
   },
-  "homepage": "https://github.com/ljharb/define-data-property#readme",
+  "homepage": "https://github.com/ljharb/get-intrinsic#readme",
   "keywords": [
-    "define",
-    "data",
-    "property",
-    "object",
-    "accessor",
     "javascript",
     "ecmascript",
-    "enumerable",
-    "configurable",
-    "writable"
+    "es",
+    "js",
+    "intrinsic",
+    "getintrinsic",
+    "es-abstract"
   ],
   "license": "MIT",
   "main": "index.js",
-  "name": "define-data-property",
+  "name": "get-intrinsic",
   "publishConfig": {
     "ignore": [
-      ".github/workflows",
-      "types/reflect.ownkeys"
+      ".github/workflows"
     ]
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ljharb/define-data-property.git"
+    "url": "git+https://github.com/ljharb/get-intrinsic.git"
   },
   "scripts": {
-    "lint": "eslint --ext=js,mjs .",
-    "postlint": "npm run tsc",
+    "lint": "eslint --ext=.js,.mjs .",
     "posttest": "aud --production",
     "postversion": "auto-changelog && git add CHANGELOG.md && git commit --no-edit --amend && git tag -f \"v$(node -e \"console.log(require('./package.json').version)\")\"",
     "prelint": "evalmd README.md",
@@ -122,13 +115,11 @@
     "pretest": "npm run lint",
     "test": "npm run tests-only",
     "tests-only": "nyc tape 'test/**/*.js'",
-    "tsc": "tsc -p .",
     "version": "auto-changelog && git add CHANGELOG.md"
   },
   "sideEffects": false,
   "testling": {
-    "files": "test/index.js"
+    "files": "test/GetIntrinsic.js"
   },
-  "types": "./index.d.ts",
-  "version": "1.1.4"
+  "version": "1.2.4"
 }
