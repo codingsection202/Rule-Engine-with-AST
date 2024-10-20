@@ -1,317 +1,237 @@
-# cookie
+# fill-range [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=W8YFZ425KND68) [![NPM version](https://img.shields.io/npm/v/fill-range.svg?style=flat)](https://www.npmjs.com/package/fill-range) [![NPM monthly downloads](https://img.shields.io/npm/dm/fill-range.svg?style=flat)](https://npmjs.org/package/fill-range) [![NPM total downloads](https://img.shields.io/npm/dt/fill-range.svg?style=flat)](https://npmjs.org/package/fill-range) [![Linux Build Status](https://img.shields.io/travis/jonschlinkert/fill-range.svg?style=flat&label=Travis)](https://travis-ci.org/jonschlinkert/fill-range)
 
-[![NPM Version][npm-version-image]][npm-url]
-[![NPM Downloads][npm-downloads-image]][npm-url]
-[![Node.js Version][node-image]][node-url]
-[![Build Status][ci-image]][ci-url]
-[![Coverage Status][coveralls-image]][coveralls-url]
+> Fill in a range of numbers or letters, optionally passing an increment or `step` to use, or create a regex-compatible range with `options.toRegex`
 
-Basic HTTP cookie parser and serializer for HTTP servers.
+Please consider following this project's author, [Jon Schlinkert](https://github.com/jonschlinkert), and consider starring the project to show your :heart: and support.
 
-## Installation
+## Install
 
-This is a [Node.js](https://nodejs.org/en/) module available through the
-[npm registry](https://www.npmjs.com/). Installation is done using the
-[`npm install` command](https://docs.npmjs.com/getting-started/installing-npm-packages-locally):
+Install with [npm](https://www.npmjs.com/):
 
 ```sh
-$ npm install cookie
+$ npm install --save fill-range
 ```
 
-## API
+## Usage
+
+Expands numbers and letters, optionally using a `step` as the last argument. _(Numbers may be defined as JavaScript numbers or strings)_.
 
 ```js
-var cookie = require('cookie');
+const fill = require('fill-range');
+// fill(from, to[, step, options]);
+
+console.log(fill('1', '10')); //=> ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10']
+console.log(fill('1', '10', { toRegex: true })); //=> [1-9]|10
 ```
 
-### cookie.parse(str, options)
+**Params**
 
-Parse an HTTP `Cookie` header string and returning an object of all cookie name-value pairs.
-The `str` argument is the string representing a `Cookie` header value and `options` is an
-optional object containing additional parsing options.
+* `from`: **{String|Number}** the number or letter to start with
+* `to`: **{String|Number}** the number or letter to end with
+* `step`: **{String|Number|Object|Function}** Optionally pass a [step](#optionsstep) to use.
+* `options`: **{Object|Function}**: See all available [options](#options)
+
+## Examples
+
+By default, an array of values is returned.
+
+**Alphabetical ranges**
 
 ```js
-var cookies = cookie.parse('foo=bar; equation=E%3Dmc%5E2');
-// { foo: 'bar', equation: 'E=mc^2' }
+console.log(fill('a', 'e')); //=> ['a', 'b', 'c', 'd', 'e']
+console.log(fill('A', 'E')); //=> [ 'A', 'B', 'C', 'D', 'E' ]
 ```
 
-#### Options
+**Numerical ranges**
 
-`cookie.parse` accepts these properties in the options object.
-
-##### decode
-
-Specifies a function that will be used to decode a cookie's value. Since the value of a cookie
-has a limited character set (and must be a simple string), this function can be used to decode
-a previously-encoded cookie value into a JavaScript string or other object.
-
-The default function is the global `decodeURIComponent`, which will decode any URL-encoded
-sequences into their byte representations.
-
-**note** if an error is thrown from this function, the original, non-decoded cookie value will
-be returned as the cookie's value.
-
-### cookie.serialize(name, value, options)
-
-Serialize a cookie name-value pair into a `Set-Cookie` header string. The `name` argument is the
-name for the cookie, the `value` argument is the value to set the cookie to, and the `options`
-argument is an optional object containing additional serialization options.
+Numbers can be defined as actual numbers or strings.
 
 ```js
-var setCookie = cookie.serialize('foo', 'bar');
-// foo=bar
+console.log(fill(1, 5));     //=> [ 1, 2, 3, 4, 5 ]
+console.log(fill('1', '5')); //=> [ 1, 2, 3, 4, 5 ]
 ```
 
-#### Options
+**Negative ranges**
 
-`cookie.serialize` accepts these properties in the options object.
-
-##### domain
-
-Specifies the value for the [`Domain` `Set-Cookie` attribute][rfc-6265-5.2.3]. By default, no
-domain is set, and most clients will consider the cookie to apply to only the current domain.
-
-##### encode
-
-Specifies a function that will be used to encode a cookie's value. Since value of a cookie
-has a limited character set (and must be a simple string), this function can be used to encode
-a value into a string suited for a cookie's value.
-
-The default function is the global `encodeURIComponent`, which will encode a JavaScript string
-into UTF-8 byte sequences and then URL-encode any that fall outside of the cookie range.
-
-##### expires
-
-Specifies the `Date` object to be the value for the [`Expires` `Set-Cookie` attribute][rfc-6265-5.2.1].
-By default, no expiration is set, and most clients will consider this a "non-persistent cookie" and
-will delete it on a condition like exiting a web browser application.
-
-**note** the [cookie storage model specification][rfc-6265-5.3] states that if both `expires` and
-`maxAge` are set, then `maxAge` takes precedence, but it is possible not all clients by obey this,
-so if both are set, they should point to the same date and time.
-
-##### httpOnly
-
-Specifies the `boolean` value for the [`HttpOnly` `Set-Cookie` attribute][rfc-6265-5.2.6]. When truthy,
-the `HttpOnly` attribute is set, otherwise it is not. By default, the `HttpOnly` attribute is not set.
-
-**note** be careful when setting this to `true`, as compliant clients will not allow client-side
-JavaScript to see the cookie in `document.cookie`.
-
-##### maxAge
-
-Specifies the `number` (in seconds) to be the value for the [`Max-Age` `Set-Cookie` attribute][rfc-6265-5.2.2].
-The given number will be converted to an integer by rounding down. By default, no maximum age is set.
-
-**note** the [cookie storage model specification][rfc-6265-5.3] states that if both `expires` and
-`maxAge` are set, then `maxAge` takes precedence, but it is possible not all clients by obey this,
-so if both are set, they should point to the same date and time.
-
-##### partitioned
-
-Specifies the `boolean` value for the [`Partitioned` `Set-Cookie`](rfc-cutler-httpbis-partitioned-cookies)
-attribute. When truthy, the `Partitioned` attribute is set, otherwise it is not. By default, the
-`Partitioned` attribute is not set.
-
-**note** This is an attribute that has not yet been fully standardized, and may change in the future.
-This also means many clients may ignore this attribute until they understand it.
-
-More information about can be found in [the proposal](https://github.com/privacycg/CHIPS).
-
-##### path
-
-Specifies the value for the [`Path` `Set-Cookie` attribute][rfc-6265-5.2.4]. By default, the path
-is considered the ["default path"][rfc-6265-5.1.4].
-
-##### priority
-
-Specifies the `string` to be the value for the [`Priority` `Set-Cookie` attribute][rfc-west-cookie-priority-00-4.1].
-
-  - `'low'` will set the `Priority` attribute to `Low`.
-  - `'medium'` will set the `Priority` attribute to `Medium`, the default priority when not set.
-  - `'high'` will set the `Priority` attribute to `High`.
-
-More information about the different priority levels can be found in
-[the specification][rfc-west-cookie-priority-00-4.1].
-
-**note** This is an attribute that has not yet been fully standardized, and may change in the future.
-This also means many clients may ignore this attribute until they understand it.
-
-##### sameSite
-
-Specifies the `boolean` or `string` to be the value for the [`SameSite` `Set-Cookie` attribute][rfc-6265bis-09-5.4.7].
-
-  - `true` will set the `SameSite` attribute to `Strict` for strict same site enforcement.
-  - `false` will not set the `SameSite` attribute.
-  - `'lax'` will set the `SameSite` attribute to `Lax` for lax same site enforcement.
-  - `'none'` will set the `SameSite` attribute to `None` for an explicit cross-site cookie.
-  - `'strict'` will set the `SameSite` attribute to `Strict` for strict same site enforcement.
-
-More information about the different enforcement levels can be found in
-[the specification][rfc-6265bis-09-5.4.7].
-
-**note** This is an attribute that has not yet been fully standardized, and may change in the future.
-This also means many clients may ignore this attribute until they understand it.
-
-##### secure
-
-Specifies the `boolean` value for the [`Secure` `Set-Cookie` attribute][rfc-6265-5.2.5]. When truthy,
-the `Secure` attribute is set, otherwise it is not. By default, the `Secure` attribute is not set.
-
-**note** be careful when setting this to `true`, as compliant clients will not send the cookie back to
-the server in the future if the browser does not have an HTTPS connection.
-
-## Example
-
-The following example uses this module in conjunction with the Node.js core HTTP server
-to prompt a user for their name and display it back on future visits.
+Numbers can be defined as actual numbers or strings.
 
 ```js
-var cookie = require('cookie');
-var escapeHtml = require('escape-html');
-var http = require('http');
-var url = require('url');
-
-function onRequest(req, res) {
-  // Parse the query string
-  var query = url.parse(req.url, true, true).query;
-
-  if (query && query.name) {
-    // Set a new cookie with the name
-    res.setHeader('Set-Cookie', cookie.serialize('name', String(query.name), {
-      httpOnly: true,
-      maxAge: 60 * 60 * 24 * 7 // 1 week
-    }));
-
-    // Redirect back after setting cookie
-    res.statusCode = 302;
-    res.setHeader('Location', req.headers.referer || '/');
-    res.end();
-    return;
-  }
-
-  // Parse the cookies on the request
-  var cookies = cookie.parse(req.headers.cookie || '');
-
-  // Get the visitor name set in the cookie
-  var name = cookies.name;
-
-  res.setHeader('Content-Type', 'text/html; charset=UTF-8');
-
-  if (name) {
-    res.write('<p>Welcome back, <b>' + escapeHtml(name) + '</b>!</p>');
-  } else {
-    res.write('<p>Hello, new visitor!</p>');
-  }
-
-  res.write('<form method="GET">');
-  res.write('<input placeholder="enter your name" name="name"> <input type="submit" value="Set Name">');
-  res.end('</form>');
-}
-
-http.createServer(onRequest).listen(3000);
+console.log(fill('-5', '-1')); //=> [ '-5', '-4', '-3', '-2', '-1' ]
+console.log(fill('-5', '5')); //=> [ '-5', '-4', '-3', '-2', '-1', '0', '1', '2', '3', '4', '5' ]
 ```
 
-## Testing
+**Steps (increments)**
+
+```js
+// numerical ranges with increments
+console.log(fill('0', '25', 4)); //=> [ '0', '4', '8', '12', '16', '20', '24' ]
+console.log(fill('0', '25', 5)); //=> [ '0', '5', '10', '15', '20', '25' ]
+console.log(fill('0', '25', 6)); //=> [ '0', '6', '12', '18', '24' ]
+
+// alphabetical ranges with increments
+console.log(fill('a', 'z', 4)); //=> [ 'a', 'e', 'i', 'm', 'q', 'u', 'y' ]
+console.log(fill('a', 'z', 5)); //=> [ 'a', 'f', 'k', 'p', 'u', 'z' ]
+console.log(fill('a', 'z', 6)); //=> [ 'a', 'g', 'm', 's', 'y' ]
+```
+
+## Options
+
+### options.step
+
+**Type**: `number` (formatted as a string or number)
+
+**Default**: `undefined`
+
+**Description**: The increment to use for the range. Can be used with letters or numbers.
+
+**Example(s)**
+
+```js
+// numbers
+console.log(fill('1', '10', 2)); //=> [ '1', '3', '5', '7', '9' ]
+console.log(fill('1', '10', 3)); //=> [ '1', '4', '7', '10' ]
+console.log(fill('1', '10', 4)); //=> [ '1', '5', '9' ]
+
+// letters
+console.log(fill('a', 'z', 5)); //=> [ 'a', 'f', 'k', 'p', 'u', 'z' ]
+console.log(fill('a', 'z', 7)); //=> [ 'a', 'h', 'o', 'v' ]
+console.log(fill('a', 'z', 9)); //=> [ 'a', 'j', 's' ]
+```
+
+### options.strictRanges
+
+**Type**: `boolean`
+
+**Default**: `false`
+
+**Description**: By default, `null` is returned when an invalid range is passed. Enable this option to throw a `RangeError` on invalid ranges.
+
+**Example(s)**
+
+The following are all invalid:
+
+```js
+fill('1.1', '2');   // decimals not supported in ranges
+fill('a', '2');     // incompatible range values
+fill(1, 10, 'foo'); // invalid "step" argument
+```
+
+### options.stringify
+
+**Type**: `boolean`
+
+**Default**: `undefined`
+
+**Description**: Cast all returned values to strings. By default, integers are returned as numbers.
+
+**Example(s)**
+
+```js
+console.log(fill(1, 5));                    //=> [ 1, 2, 3, 4, 5 ]
+console.log(fill(1, 5, { stringify: true })); //=> [ '1', '2', '3', '4', '5' ]
+```
+
+### options.toRegex
+
+**Type**: `boolean`
+
+**Default**: `undefined`
+
+**Description**: Create a regex-compatible source string, instead of expanding values to an array.
+
+**Example(s)**
+
+```js
+// alphabetical range
+console.log(fill('a', 'e', { toRegex: true })); //=> '[a-e]'
+// alphabetical with step
+console.log(fill('a', 'z', 3, { toRegex: true })); //=> 'a|d|g|j|m|p|s|v|y'
+// numerical range
+console.log(fill('1', '100', { toRegex: true })); //=> '[1-9]|[1-9][0-9]|100'
+// numerical range with zero padding
+console.log(fill('000001', '100000', { toRegex: true }));
+//=> '0{5}[1-9]|0{4}[1-9][0-9]|0{3}[1-9][0-9]{2}|0{2}[1-9][0-9]{3}|0[1-9][0-9]{4}|100000'
+```
+
+### options.transform
+
+**Type**: `function`
+
+**Default**: `undefined`
+
+**Description**: Customize each value in the returned array (or [string](#optionstoRegex)). _(you can also pass this function as the last argument to `fill()`)_.
+
+**Example(s)**
+
+```js
+// add zero padding
+console.log(fill(1, 5, value => String(value).padStart(4, '0')));
+//=> ['0001', '0002', '0003', '0004', '0005']
+```
+
+## About
+
+<details>
+<summary><strong>Contributing</strong></summary>
+
+Pull requests and stars are always welcome. For bugs and feature requests, [please create an issue](../../issues/new).
+
+</details>
+
+<details>
+<summary><strong>Running Tests</strong></summary>
+
+Running and reviewing unit tests is a great way to get familiarized with a library and its API. You can install dependencies and run tests with the following command:
 
 ```sh
-$ npm test
+$ npm install && npm test
 ```
 
-## Benchmark
+</details>
 
-```
-$ npm run bench
+<details>
+<summary><strong>Building docs</strong></summary>
 
-> cookie@0.5.0 bench
-> node benchmark/index.js
+_(This project's readme.md is generated by [verb](https://github.com/verbose/verb-generate-readme), please don't edit the readme directly. Any changes to the readme must be made in the [.verb.md](.verb.md) readme template.)_
 
-  node@18.18.2
-  acorn@8.10.0
-  ada@2.6.0
-  ares@1.19.1
-  brotli@1.0.9
-  cldr@43.1
-  icu@73.2
-  llhttp@6.0.11
-  modules@108
-  napi@9
-  nghttp2@1.57.0
-  nghttp3@0.7.0
-  ngtcp2@0.8.1
-  openssl@3.0.10+quic
-  simdutf@3.2.14
-  tz@2023c
-  undici@5.26.3
-  unicode@15.0
-  uv@1.44.2
-  uvwasi@0.0.18
-  v8@10.2.154.26-node.26
-  zlib@1.2.13.1-motley
+To generate the readme, run the following command:
 
-> node benchmark/parse-top.js
-
-  cookie.parse - top sites
-
-  14 tests completed.
-
-  parse accounts.google.com x 2,588,913 ops/sec ±0.74% (186 runs sampled)
-  parse apple.com           x 2,370,002 ops/sec ±0.69% (186 runs sampled)
-  parse cloudflare.com      x 2,213,102 ops/sec ±0.88% (188 runs sampled)
-  parse docs.google.com     x 2,194,157 ops/sec ±1.03% (184 runs sampled)
-  parse drive.google.com    x 2,265,084 ops/sec ±0.79% (187 runs sampled)
-  parse en.wikipedia.org    x   457,099 ops/sec ±0.81% (186 runs sampled)
-  parse linkedin.com        x   504,407 ops/sec ±0.89% (186 runs sampled)
-  parse maps.google.com     x 1,230,959 ops/sec ±0.98% (186 runs sampled)
-  parse microsoft.com       x   926,294 ops/sec ±0.88% (184 runs sampled)
-  parse play.google.com     x 2,311,338 ops/sec ±0.83% (185 runs sampled)
-  parse support.google.com  x 1,508,850 ops/sec ±0.86% (186 runs sampled)
-  parse www.google.com      x 1,022,582 ops/sec ±1.32% (182 runs sampled)
-  parse youtu.be            x   332,136 ops/sec ±1.02% (185 runs sampled)
-  parse youtube.com         x   323,833 ops/sec ±0.77% (183 runs sampled)
-
-> node benchmark/parse.js
-
-  cookie.parse - generic
-
-  6 tests completed.
-
-  simple      x 3,214,032 ops/sec ±1.61% (183 runs sampled)
-  decode      x   587,237 ops/sec ±1.16% (187 runs sampled)
-  unquote     x 2,954,618 ops/sec ±1.35% (183 runs sampled)
-  duplicates  x   857,008 ops/sec ±0.89% (187 runs sampled)
-  10 cookies  x   292,133 ops/sec ±0.89% (187 runs sampled)
-  100 cookies x    22,610 ops/sec ±0.68% (187 runs sampled)
+```sh
+$ npm install -g verbose/verb#dev verb-generate-readme && verb
 ```
 
-## References
+</details>
 
-- [RFC 6265: HTTP State Management Mechanism][rfc-6265]
-- [Same-site Cookies][rfc-6265bis-09-5.4.7]
+### Contributors
 
-[rfc-cutler-httpbis-partitioned-cookies]: https://tools.ietf.org/html/draft-cutler-httpbis-partitioned-cookies/
-[rfc-west-cookie-priority-00-4.1]: https://tools.ietf.org/html/draft-west-cookie-priority-00#section-4.1
-[rfc-6265bis-09-5.4.7]: https://tools.ietf.org/html/draft-ietf-httpbis-rfc6265bis-09#section-5.4.7
-[rfc-6265]: https://tools.ietf.org/html/rfc6265
-[rfc-6265-5.1.4]: https://tools.ietf.org/html/rfc6265#section-5.1.4
-[rfc-6265-5.2.1]: https://tools.ietf.org/html/rfc6265#section-5.2.1
-[rfc-6265-5.2.2]: https://tools.ietf.org/html/rfc6265#section-5.2.2
-[rfc-6265-5.2.3]: https://tools.ietf.org/html/rfc6265#section-5.2.3
-[rfc-6265-5.2.4]: https://tools.ietf.org/html/rfc6265#section-5.2.4
-[rfc-6265-5.2.5]: https://tools.ietf.org/html/rfc6265#section-5.2.5
-[rfc-6265-5.2.6]: https://tools.ietf.org/html/rfc6265#section-5.2.6
-[rfc-6265-5.3]: https://tools.ietf.org/html/rfc6265#section-5.3
+| **Commits** | **Contributor** |  
+| --- | --- |  
+| 116 | [jonschlinkert](https://github.com/jonschlinkert) |  
+| 4   | [paulmillr](https://github.com/paulmillr) |  
+| 2   | [realityking](https://github.com/realityking) |  
+| 2   | [bluelovers](https://github.com/bluelovers) |  
+| 1   | [edorivai](https://github.com/edorivai) |  
+| 1   | [wtgtybhertgeghgtwtg](https://github.com/wtgtybhertgeghgtwtg) |  
 
-## License
+### Author
 
-[MIT](LICENSE)
+**Jon Schlinkert**
 
-[ci-image]: https://badgen.net/github/checks/jshttp/cookie/master?label=ci
-[ci-url]: https://github.com/jshttp/cookie/actions/workflows/ci.yml
-[coveralls-image]: https://badgen.net/coveralls/c/github/jshttp/cookie/master
-[coveralls-url]: https://coveralls.io/r/jshttp/cookie?branch=master
-[node-image]: https://badgen.net/npm/node/cookie
-[node-url]: https://nodejs.org/en/download
-[npm-downloads-image]: https://badgen.net/npm/dm/cookie
-[npm-url]: https://npmjs.org/package/cookie
-[npm-version-image]: https://badgen.net/npm/v/cookie
+* [GitHub Profile](https://github.com/jonschlinkert)
+* [Twitter Profile](https://twitter.com/jonschlinkert)
+* [LinkedIn Profile](https://linkedin.com/in/jonschlinkert)
+
+Please consider supporting me on Patreon, or [start your own Patreon page](https://patreon.com/invite/bxpbvm)!
+
+<a href="https://www.patreon.com/jonschlinkert">
+<img src="https://c5.patreon.com/external/logo/become_a_patron_button@2x.png" height="50">
+</a>
+
+### License
+
+Copyright © 2019, [Jon Schlinkert](https://github.com/jonschlinkert).
+Released under the [MIT License](LICENSE).
+
+***
+
+_This file was generated by [verb-generate-readme](https://github.com/verbose/verb-generate-readme), v0.8.0, on April 08, 2019._
