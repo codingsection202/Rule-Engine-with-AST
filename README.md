@@ -1,87 +1,97 @@
-anymatch [![Build Status](https://travis-ci.org/micromatch/anymatch.svg?branch=master)](https://travis-ci.org/micromatch/anymatch) [![Coverage Status](https://img.shields.io/coveralls/micromatch/anymatch.svg?branch=master)](https://coveralls.io/r/micromatch/anymatch?branch=master)
-======
-Javascript module to match a string against a regular expression, glob, string,
-or function that takes the string as an argument and returns a truthy or falsy
-value. The matcher can also be an array of any or all of these. Useful for
-allowing a very flexible user-defined config to define things like file paths.
+# balanced-match
 
-__Note: This module has Bash-parity, please be aware that Windows-style backslashes are not supported as separators. See https://github.com/micromatch/micromatch#backslashes for more information.__
+Match balanced string pairs, like `{` and `}` or `<b>` and `</b>`. Supports regular expressions as well!
 
+[![build status](https://secure.travis-ci.org/juliangruber/balanced-match.svg)](http://travis-ci.org/juliangruber/balanced-match)
+[![downloads](https://img.shields.io/npm/dm/balanced-match.svg)](https://www.npmjs.org/package/balanced-match)
 
-Usage
------
-```sh
-npm install anymatch
-```
+[![testling badge](https://ci.testling.com/juliangruber/balanced-match.png)](https://ci.testling.com/juliangruber/balanced-match)
 
-#### anymatch(matchers, testString, [returnIndex], [options])
-* __matchers__: (_Array|String|RegExp|Function_)
-String to be directly matched, string with glob patterns, regular expression
-test, function that takes the testString as an argument and returns a truthy
-value if it should be matched, or an array of any number and mix of these types.
-* __testString__: (_String|Array_) The string to test against the matchers. If
-passed as an array, the first element of the array will be used as the
-`testString` for non-function matchers, while the entire array will be applied
-as the arguments for function matchers.
-* __options__: (_Object_ [optional]_) Any of the [picomatch](https://github.com/micromatch/picomatch#options) options.
-    * __returnIndex__: (_Boolean [optional]_) If true, return the array index of
-the first matcher that that testString matched, or -1 if no match, instead of a
-boolean result.
+## Example
+
+Get the first matching pair of braces:
 
 ```js
-const anymatch = require('anymatch');
+var balanced = require('balanced-match');
 
-const matchers = [ 'path/to/file.js', 'path/anyjs/**/*.js', /foo.js$/, string => string.includes('bar') && string.length > 10 ] ;
-
-anymatch(matchers, 'path/to/file.js'); // true
-anymatch(matchers, 'path/anyjs/baz.js'); // true
-anymatch(matchers, 'path/to/foo.js'); // true
-anymatch(matchers, 'path/to/bar.js'); // true
-anymatch(matchers, 'bar.js'); // false
-
-// returnIndex = true
-anymatch(matchers, 'foo.js', {returnIndex: true}); // 2
-anymatch(matchers, 'path/anyjs/foo.js', {returnIndex: true}); // 1
-
-// any picomatc
-
-// using globs to match directories and their children
-anymatch('node_modules', 'node_modules'); // true
-anymatch('node_modules', 'node_modules/somelib/index.js'); // false
-anymatch('node_modules/**', 'node_modules/somelib/index.js'); // true
-anymatch('node_modules/**', '/absolute/path/to/node_modules/somelib/index.js'); // false
-anymatch('**/node_modules/**', '/absolute/path/to/node_modules/somelib/index.js'); // true
-
-const matcher = anymatch(matchers);
-['foo.js', 'bar.js'].filter(matcher);  // [ 'foo.js' ]
-anymatch master* ❯
-
+console.log(balanced('{', '}', 'pre{in{nested}}post'));
+console.log(balanced('{', '}', 'pre{first}between{second}post'));
+console.log(balanced(/\s+\{\s+/, /\s+\}\s+/, 'pre  {   in{nest}   }  post'));
 ```
 
-#### anymatch(matchers)
-You can also pass in only your matcher(s) to get a curried function that has
-already been bound to the provided matching criteria. This can be used as an
-`Array#filter` callback.
+The matches are:
 
-```js
-var matcher = anymatch(matchers);
-
-matcher('path/to/file.js'); // true
-matcher('path/anyjs/baz.js', true); // 1
-
-['foo.js', 'bar.js'].filter(matcher); // ['foo.js']
+```bash
+$ node example.js
+{ start: 3, end: 14, pre: 'pre', body: 'in{nested}', post: 'post' }
+{ start: 3,
+  end: 9,
+  pre: 'pre',
+  body: 'first',
+  post: 'between{second}post' }
+{ start: 3, end: 17, pre: 'pre', body: 'in{nest}', post: 'post' }
 ```
 
-Changelog
-----------
-[See release notes page on GitHub](https://github.com/micromatch/anymatch/releases)
+## API
 
-- **v3.0:** Removed `startIndex` and `endIndex` arguments. Node 8.x-only.
-- **v2.0:** [micromatch](https://github.com/jonschlinkert/micromatch) moves away from minimatch-parity and inline with Bash. This includes handling backslashes differently (see https://github.com/micromatch/micromatch#backslashes for more information).
-- **v1.2:** anymatch uses [micromatch](https://github.com/jonschlinkert/micromatch)
-for glob pattern matching. Issues with glob pattern matching should be
-reported directly to the [micromatch issue tracker](https://github.com/jonschlinkert/micromatch/issues).
+### var m = balanced(a, b, str)
 
-License
--------
-[ISC](https://raw.github.com/micromatch/anymatch/master/LICENSE)
+For the first non-nested matching pair of `a` and `b` in `str`, return an
+object with those keys:
+
+* **start** the index of the first match of `a`
+* **end** the index of the matching `b`
+* **pre** the preamble, `a` and `b` not included
+* **body** the match, `a` and `b` not included
+* **post** the postscript, `a` and `b` not included
+
+If there's no match, `undefined` will be returned.
+
+If the `str` contains more `a` than `b` / there are unmatched pairs, the first match that was closed will be used. For example, `{{a}` will match `['{', 'a', '']` and `{a}}` will match `['', 'a', '}']`.
+
+### var r = balanced.range(a, b, str)
+
+For the first non-nested matching pair of `a` and `b` in `str`, return an
+array with indexes: `[ <a index>, <b index> ]`.
+
+If there's no match, `undefined` will be returned.
+
+If the `str` contains more `a` than `b` / there are unmatched pairs, the first match that was closed will be used. For example, `{{a}` will match `[ 1, 3 ]` and `{a}}` will match `[0, 2]`.
+
+## Installation
+
+With [npm](https://npmjs.org) do:
+
+```bash
+npm install balanced-match
+```
+
+## Security contact information
+
+To report a security vulnerability, please use the
+[Tidelift security contact](https://tidelift.com/security).
+Tidelift will coordinate the fix and disclosure.
+
+## License
+
+(MIT)
+
+Copyright (c) 2013 Julian Gruber &lt;julian@juliangruber.com&gt;
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of
+this software and associated documentation files (the "Software"), to deal in
+the Software without restriction, including without limitation the rights to
+use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
+of the Software, and to permit persons to whom the Software is furnished to do
+so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
