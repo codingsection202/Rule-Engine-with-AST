@@ -1,80 +1,238 @@
-'use strict';
+(function () {
 
-var callBind = require('../');
-var bind = require('function-bind');
-var gOPD = require('gopd');
-var hasStrictMode = require('has-strict-mode')();
-var forEach = require('for-each');
-var inspect = require('object-inspect');
-var v = require('es-value-fixtures');
+  'use strict';
 
-var test = require('tape');
+  var assign = require('object-assign');
+  var vary = require('vary');
 
-/*
- * older engines have length nonconfigurable
- * in io.js v3, it is configurable except on bound functions, hence the .bind()
- */
-var functionsHaveConfigurableLengths = !!(
-	gOPD
-	&& Object.getOwnPropertyDescriptor
-	&& Object.getOwnPropertyDescriptor(bind.call(function () {}), 'length').configurable
-);
+  var defaults = {
+    origin: '*',
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    preflightContinue: false,
+    optionsSuccessStatus: 204
+  };
 
-test('callBind', function (t) {
-	forEach(v.nonFunctions, function (nonFunction) {
-		t['throws'](
-			function () { callBind(nonFunction); },
-			TypeError,
-			inspect(nonFunction) + ' is not a function'
-		);
-	});
+  function isString(s) {
+    return typeof s === 'string' || s instanceof String;
+  }
 
-	var sentinel = { sentinel: true };
-	var func = function (a, b) {
-		// eslint-disable-next-line no-invalid-this
-		return [!hasStrictMode && this === global ? undefined : this, a, b];
-	};
-	t.equal(func.length, 2, 'original function length is 2');
-	t.deepEqual(func(), [undefined, undefined, undefined], 'unbound func with too few args');
-	t.deepEqual(func(1, 2), [undefined, 1, 2], 'unbound func with right args');
-	t.deepEqual(func(1, 2, 3), [undefined, 1, 2], 'unbound func with too many args');
+  function isOriginAllowed(origin, allowedOrigin) {
+    if (Array.isArray(allowedOrigin)) {
+      for (var i = 0; i < allowedOrigin.length; ++i) {
+        if (isOriginAllowed(origin, allowedOrigin[i])) {
+          return true;
+        }
+      }
+      return false;
+    } else if (isString(allowedOrigin)) {
+      return origin === allowedOrigin;
+    } else if (allowedOrigin instanceof RegExp) {
+      return allowedOrigin.test(origin);
+    } else {
+      return !!allowedOrigin;
+    }
+  }
 
-	var bound = callBind(func);
-	t.equal(bound.length, func.length + 1, 'function length is preserved', { skip: !functionsHaveConfigurableLengths });
-	t.deepEqual(bound(), [undefined, undefined, undefined], 'bound func with too few args');
-	t.deepEqual(bound(1, 2), [hasStrictMode ? 1 : Object(1), 2, undefined], 'bound func with right args');
-	t.deepEqual(bound(1, 2, 3), [hasStrictMode ? 1 : Object(1), 2, 3], 'bound func with too many args');
+  function configureOrigin(options, req) {
+    var requestOrigin = req.headers.origin,
+      headers = [],
+      isAllowed;
 
-	var boundR = callBind(func, sentinel);
-	t.equal(boundR.length, func.length, 'function length is preserved', { skip: !functionsHaveConfigurableLengths });
-	t.deepEqual(boundR(), [sentinel, undefined, undefined], 'bound func with receiver, with too few args');
-	t.deepEqual(boundR(1, 2), [sentinel, 1, 2], 'bound func with receiver, with right args');
-	t.deepEqual(boundR(1, 2, 3), [sentinel, 1, 2], 'bound func with receiver, with too many args');
+    if (!options.origin || options.origin === '*') {
+      // allow any origin
+      headers.push([{
+        key: 'Access-Control-Allow-Origin',
+        value: '*'
+      }]);
+    } else if (isString(options.origin)) {
+      // fixed origin
+      headers.push([{
+        key: 'Access-Control-Allow-Origin',
+        value: options.origin
+      }]);
+      headers.push([{
+        key: 'Vary',
+        value: 'Origin'
+      }]);
+    } else {
+      isAllowed = isOriginAllowed(requestOrigin, options.origin);
+      // reflect origin
+      headers.push([{
+        key: 'Access-Control-Allow-Origin',
+        value: isAllowed ? requestOrigin : false
+      }]);
+      headers.push([{
+        key: 'Vary',
+        value: 'Origin'
+      }]);
+    }
 
-	var boundArg = callBind(func, sentinel, 1);
-	t.equal(boundArg.length, func.length - 1, 'function length is preserved', { skip: !functionsHaveConfigurableLengths });
-	t.deepEqual(boundArg(), [sentinel, 1, undefined], 'bound func with receiver and arg, with too few args');
-	t.deepEqual(boundArg(2), [sentinel, 1, 2], 'bound func with receiver and arg, with right arg');
-	t.deepEqual(boundArg(2, 3), [sentinel, 1, 2], 'bound func with receiver and arg, with too many args');
+    return headers;
+  }
 
-	t.test('callBind.apply', function (st) {
-		var aBound = callBind.apply(func);
-		st.deepEqual(aBound(sentinel), [sentinel, undefined, undefined], 'apply-bound func with no args');
-		st.deepEqual(aBound(sentinel, [1], 4), [sentinel, 1, undefined], 'apply-bound func with too few args');
-		st.deepEqual(aBound(sentinel, [1, 2], 4), [sentinel, 1, 2], 'apply-bound func with right args');
+  function configureMethods(options) {
+    var methods = options.methods;
+    if (methods.join) {
+      methods = options.methods.join(','); // .methods is an array, so turn it into a string
+    }
+    return {
+      key: 'Access-Control-Allow-Methods',
+      value: methods
+    };
+  }
 
-		var aBoundArg = callBind.apply(func);
-		st.deepEqual(aBoundArg(sentinel, [1, 2, 3], 4), [sentinel, 1, 2], 'apply-bound func with too many args');
-		st.deepEqual(aBoundArg(sentinel, [1, 2], 4), [sentinel, 1, 2], 'apply-bound func with right args');
-		st.deepEqual(aBoundArg(sentinel, [1], 4), [sentinel, 1, undefined], 'apply-bound func with too few args');
+  function configureCredentials(options) {
+    if (options.credentials === true) {
+      return {
+        key: 'Access-Control-Allow-Credentials',
+        value: 'true'
+      };
+    }
+    return null;
+  }
 
-		var aBoundR = callBind.apply(func, sentinel);
-		st.deepEqual(aBoundR([1, 2, 3], 4), [sentinel, 1, 2], 'apply-bound func with receiver and too many args');
-		st.deepEqual(aBoundR([1, 2], 4), [sentinel, 1, 2], 'apply-bound func with receiver and right args');
-		st.deepEqual(aBoundR([1], 4), [sentinel, 1, undefined], 'apply-bound func with receiver and too few args');
+  function configureAllowedHeaders(options, req) {
+    var allowedHeaders = options.allowedHeaders || options.headers;
+    var headers = [];
 
-		st.end();
-	});
+    if (!allowedHeaders) {
+      allowedHeaders = req.headers['access-control-request-headers']; // .headers wasn't specified, so reflect the request headers
+      headers.push([{
+        key: 'Vary',
+        value: 'Access-Control-Request-Headers'
+      }]);
+    } else if (allowedHeaders.join) {
+      allowedHeaders = allowedHeaders.join(','); // .headers is an array, so turn it into a string
+    }
+    if (allowedHeaders && allowedHeaders.length) {
+      headers.push([{
+        key: 'Access-Control-Allow-Headers',
+        value: allowedHeaders
+      }]);
+    }
 
-	t.end();
-});
+    return headers;
+  }
+
+  function configureExposedHeaders(options) {
+    var headers = options.exposedHeaders;
+    if (!headers) {
+      return null;
+    } else if (headers.join) {
+      headers = headers.join(','); // .headers is an array, so turn it into a string
+    }
+    if (headers && headers.length) {
+      return {
+        key: 'Access-Control-Expose-Headers',
+        value: headers
+      };
+    }
+    return null;
+  }
+
+  function configureMaxAge(options) {
+    var maxAge = (typeof options.maxAge === 'number' || options.maxAge) && options.maxAge.toString()
+    if (maxAge && maxAge.length) {
+      return {
+        key: 'Access-Control-Max-Age',
+        value: maxAge
+      };
+    }
+    return null;
+  }
+
+  function applyHeaders(headers, res) {
+    for (var i = 0, n = headers.length; i < n; i++) {
+      var header = headers[i];
+      if (header) {
+        if (Array.isArray(header)) {
+          applyHeaders(header, res);
+        } else if (header.key === 'Vary' && header.value) {
+          vary(res, header.value);
+        } else if (header.value) {
+          res.setHeader(header.key, header.value);
+        }
+      }
+    }
+  }
+
+  function cors(options, req, res, next) {
+    var headers = [],
+      method = req.method && req.method.toUpperCase && req.method.toUpperCase();
+
+    if (method === 'OPTIONS') {
+      // preflight
+      headers.push(configureOrigin(options, req));
+      headers.push(configureCredentials(options, req));
+      headers.push(configureMethods(options, req));
+      headers.push(configureAllowedHeaders(options, req));
+      headers.push(configureMaxAge(options, req));
+      headers.push(configureExposedHeaders(options, req));
+      applyHeaders(headers, res);
+
+      if (options.preflightContinue) {
+        next();
+      } else {
+        // Safari (and potentially other browsers) need content-length 0,
+        //   for 204 or they just hang waiting for a body
+        res.statusCode = options.optionsSuccessStatus;
+        res.setHeader('Content-Length', '0');
+        res.end();
+      }
+    } else {
+      // actual response
+      headers.push(configureOrigin(options, req));
+      headers.push(configureCredentials(options, req));
+      headers.push(configureExposedHeaders(options, req));
+      applyHeaders(headers, res);
+      next();
+    }
+  }
+
+  function middlewareWrapper(o) {
+    // if options are static (either via defaults or custom options passed in), wrap in a function
+    var optionsCallback = null;
+    if (typeof o === 'function') {
+      optionsCallback = o;
+    } else {
+      optionsCallback = function (req, cb) {
+        cb(null, o);
+      };
+    }
+
+    return function corsMiddleware(req, res, next) {
+      optionsCallback(req, function (err, options) {
+        if (err) {
+          next(err);
+        } else {
+          var corsOptions = assign({}, defaults, options);
+          var originCallback = null;
+          if (corsOptions.origin && typeof corsOptions.origin === 'function') {
+            originCallback = corsOptions.origin;
+          } else if (corsOptions.origin) {
+            originCallback = function (origin, cb) {
+              cb(null, corsOptions.origin);
+            };
+          }
+
+          if (originCallback) {
+            originCallback(req.headers.origin, function (err2, origin) {
+              if (err2 || !origin) {
+                next(err2);
+              } else {
+                corsOptions.origin = origin;
+                cors(corsOptions, req, res, next);
+              }
+            });
+          } else {
+            next();
+          }
+        }
+      });
+    };
+  }
+
+  // can pass either an options hash, an options delegate, or nothing
+  module.exports = middlewareWrapper;
+
+}());
