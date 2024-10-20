@@ -1,72 +1,75 @@
 {
-  "_from": "binary-extensions@^2.0.0",
-  "_id": "binary-extensions@2.3.0",
+  "_from": "brace-expansion@^1.1.7",
+  "_id": "brace-expansion@1.1.11",
   "_inBundle": false,
-  "_integrity": "sha512-Ceh+7ox5qe7LJuLHoY0feh3pHuUDHAcRUeyL2VYghZwfpkNIy/+8Ocg0a3UuSoYzavmylwuLWQOf3hl0jjMMIw==",
-  "_location": "/binary-extensions",
+  "_integrity": "sha512-iCuPHDFgrHX7H2vEI/5xpz07zSHB00TpugqhmYtVmMO6518mCuRMoOYFldEBl0g187ufozdaHgWKcYFb61qGiA==",
+  "_location": "/brace-expansion",
   "_phantomChildren": {},
   "_requested": {
     "type": "range",
     "registry": true,
-    "raw": "binary-extensions@^2.0.0",
-    "name": "binary-extensions",
-    "escapedName": "binary-extensions",
-    "rawSpec": "^2.0.0",
+    "raw": "brace-expansion@^1.1.7",
+    "name": "brace-expansion",
+    "escapedName": "brace-expansion",
+    "rawSpec": "^1.1.7",
     "saveSpec": null,
-    "fetchSpec": "^2.0.0"
+    "fetchSpec": "^1.1.7"
   },
   "_requiredBy": [
-    "/is-binary-path"
+    "/minimatch"
   ],
-  "_resolved": "https://registry.npmjs.org/binary-extensions/-/binary-extensions-2.3.0.tgz",
-  "_shasum": "f6e14a97858d327252200242d4ccfe522c445522",
-  "_spec": "binary-extensions@^2.0.0",
-  "_where": "/home/i_bojja.pravalika/Downloads/-Rule-Engine-with-AST-main/Backend/node_modules/is-binary-path",
+  "_resolved": "https://registry.npmjs.org/brace-expansion/-/brace-expansion-1.1.11.tgz",
+  "_shasum": "3c7fcbf529d87226f3d2f52b966ff5271eb441dd",
+  "_spec": "brace-expansion@^1.1.7",
+  "_where": "/home/i_bojja.pravalika/Downloads/-Rule-Engine-with-AST-main/Backend/node_modules/minimatch",
   "author": {
-    "name": "Sindre Sorhus",
-    "email": "sindresorhus@gmail.com",
-    "url": "https://sindresorhus.com"
+    "name": "Julian Gruber",
+    "email": "mail@juliangruber.com",
+    "url": "http://juliangruber.com"
   },
   "bugs": {
-    "url": "https://github.com/sindresorhus/binary-extensions/issues"
+    "url": "https://github.com/juliangruber/brace-expansion/issues"
   },
   "bundleDependencies": false,
+  "dependencies": {
+    "balanced-match": "^1.0.0",
+    "concat-map": "0.0.1"
+  },
   "deprecated": false,
-  "description": "List of binary file extensions",
+  "description": "Brace expansion as known from sh/bash",
   "devDependencies": {
-    "ava": "^1.4.1",
-    "tsd": "^0.7.2",
-    "xo": "^0.24.0"
+    "matcha": "^0.7.0",
+    "tape": "^4.6.0"
   },
-  "engines": {
-    "node": ">=8"
-  },
-  "files": [
-    "index.js",
-    "index.d.ts",
-    "binary-extensions.json",
-    "binary-extensions.json.d.ts"
-  ],
-  "funding": "https://github.com/sponsors/sindresorhus",
-  "homepage": "https://github.com/sindresorhus/binary-extensions#readme",
-  "keywords": [
-    "binary",
-    "extensions",
-    "extension",
-    "file",
-    "json",
-    "list",
-    "array"
-  ],
+  "homepage": "https://github.com/juliangruber/brace-expansion",
+  "keywords": [],
   "license": "MIT",
-  "name": "binary-extensions",
+  "main": "index.js",
+  "name": "brace-expansion",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/sindresorhus/binary-extensions.git"
+    "url": "git://github.com/juliangruber/brace-expansion.git"
   },
   "scripts": {
-    "test": "xo && ava && tsd"
+    "bench": "matcha test/perf/bench.js",
+    "gentest": "bash test/generate.sh",
+    "test": "tape test/*.js"
   },
-  "sideEffects": false,
-  "version": "2.3.0"
+  "testling": {
+    "files": "test/*.js",
+    "browsers": [
+      "ie/8..latest",
+      "firefox/20..latest",
+      "firefox/nightly",
+      "chrome/25..latest",
+      "chrome/canary",
+      "opera/12..latest",
+      "opera/next",
+      "safari/5.1..latest",
+      "ipad/6.0..latest",
+      "iphone/6.0..latest",
+      "android-browser/4.2..latest"
+    ]
+  },
+  "version": "1.1.11"
 }
