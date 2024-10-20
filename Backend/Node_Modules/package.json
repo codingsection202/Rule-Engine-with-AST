@@ -1,93 +1,63 @@
 {
-  "_from": "dotenv@^16.4.5",
-  "_id": "dotenv@16.4.5",
+  "_from": "ee-first@1.1.1",
+  "_id": "ee-first@1.1.1",
   "_inBundle": false,
-  "_integrity": "sha512-ZmdL2rui+eB2YwhsWzjInR8LldtZHGDoQ1ugH85ppHKwpUHL7j7rN0Ti9NCnGiQbhaZ11FpR+7ao1dNsmduNUg==",
-  "_location": "/dotenv",
+  "_integrity": "sha512-WMwm9LhRUo+WUaRN+vRuETqG89IgZphVSNkdFgeb6sS/E4OrDIN7t48CAewSHXc6C8lefD8KKfr5vY61brQlow==",
+  "_location": "/ee-first",
   "_phantomChildren": {},
   "_requested": {
-    "type": "range",
+    "type": "version",
     "registry": true,
-    "raw": "dotenv@^16.4.5",
-    "name": "dotenv",
-    "escapedName": "dotenv",
-    "rawSpec": "^16.4.5",
+    "raw": "ee-first@1.1.1",
+    "name": "ee-first",
+    "escapedName": "ee-first",
+    "rawSpec": "1.1.1",
     "saveSpec": null,
-    "fetchSpec": "^16.4.5"
+    "fetchSpec": "1.1.1"
   },
   "_requiredBy": [
-    "/"
+    "/on-finished"
   ],
-  "_resolved": "https://registry.npmjs.org/dotenv/-/dotenv-16.4.5.tgz",
-  "_shasum": "cdd3b3b604cb327e286b4762e13502f717cb099f",
-  "_spec": "dotenv@^16.4.5",
-  "_where": "/home/i_bojja.pravalika/Downloads/-Rule-Engine-with-AST-main/Backend",
-  "browser": {
-    "fs": false
+  "_resolved": "https://registry.npmjs.org/ee-first/-/ee-first-1.1.1.tgz",
+  "_shasum": "590c61156b0ae2f4f0255732a158b266bc56b21d",
+  "_spec": "ee-first@1.1.1",
+  "_where": "/home/i_bojja.pravalika/Downloads/-Rule-Engine-with-AST-main/Backend/node_modules/on-finished",
+  "author": {
+    "name": "Jonathan Ong",
+    "email": "me@jongleberry.com",
+    "url": "http://jongleberry.com"
   },
   "bugs": {
-    "url": "https://github.com/motdotla/dotenv/issues"
+    "url": "https://github.com/jonathanong/ee-first/issues"
   },
   "bundleDependencies": false,
-  "deprecated": false,
-  "description": "Loads environment variables from .env file",
-  "devDependencies": {
-    "@definitelytyped/dtslint": "^0.0.133",
-    "@types/node": "^18.11.3",
-    "decache": "^4.6.1",
-    "sinon": "^14.0.1",
-    "standard": "^17.0.0",
-    "standard-markdown": "^7.1.0",
-    "standard-version": "^9.5.0",
-    "tap": "^16.3.0",
-    "tar": "^6.1.11",
-    "typescript": "^4.8.4"
-  },
-  "engines": {
-    "node": ">=12"
-  },
-  "exports": {
-    ".": {
-      "types": "./lib/main.d.ts",
-      "require": "./lib/main.js",
-      "default": "./lib/main.js"
-    },
-    "./config": "./config.js",
-    "./config.js": "./config.js",
-    "./lib/env-options": "./lib/env-options.js",
-    "./lib/env-options.js": "./lib/env-options.js",
-    "./lib/cli-options": "./lib/cli-options.js",
-    "./lib/cli-options.js": "./lib/cli-options.js",
-    "./package.json": "./package.json"
-  },
-  "funding": "https://dotenvx.com",
-  "homepage": "https://github.com/motdotla/dotenv#readme",
-  "keywords": [
-    "dotenv",
-    "env",
-    ".env",
-    "environment",
-    "variables",
-    "config",
-    "settings"
+  "contributors": [
+    {
+      "name": "Douglas Christopher Wilson",
+      "email": "doug@somethingdoug.com"
+    }
   ],
-  "license": "BSD-2-Clause",
-  "main": "lib/main.js",
-  "name": "dotenv",
+  "deprecated": false,
+  "description": "return the first event in a set of ee/event pairs",
+  "devDependencies": {
+    "istanbul": "0.3.9",
+    "mocha": "2.2.5"
+  },
+  "files": [
+    "index.js",
+    "LICENSE"
+  ],
+  "homepage": "https://github.com/jonathanong/ee-first#readme",
+  "license": "MIT",
+  "name": "ee-first",
   "repository": {
     "type": "git",
-    "url": "git://github.com/motdotla/dotenv.git"
+    "url": "git+https://github.com/jonathanong/ee-first.git"
   },
   "scripts": {
-    "dts-check": "tsc --project tests/types/tsconfig.json",
-    "lint": "standard",
-    "lint-readme": "standard-markdown",
-    "prerelease": "npm test",
-    "pretest": "npm run lint && npm run dts-check",
-    "release": "standard-version",
-    "test": "tap tests/*.js --100 -Rspec",
-    "test:coverage": "tap --coverage-report=lcov"
+    "test": "mocha --reporter spec --bail --check-leaks test/",
+    "test-cov": "istanbul cover node_modules/mocha/bin/_mocha -- --reporter dot --check-leaks test/",
+    "test-travis": "istanbul cover node_modules/mocha/bin/_mocha --report lcovonly -- --reporter spec --check-leaks test/"
   },
-  "types": "lib/main.d.ts",
-  "version": "16.4.5"
+  "version": "1.1.1"
 }
