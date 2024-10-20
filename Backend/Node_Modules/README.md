@@ -1,128 +1,55 @@
-# encodeurl
+# es-errors <sup>[![Version Badge][npm-version-svg]][package-url]</sup>
 
-[![NPM Version][npm-image]][npm-url]
-[![NPM Downloads][downloads-image]][downloads-url]
-[![Node.js Version][node-version-image]][node-version-url]
-[![Build Status][travis-image]][travis-url]
-[![Test Coverage][coveralls-image]][coveralls-url]
+[![github actions][actions-image]][actions-url]
+[![coverage][codecov-image]][codecov-url]
+[![License][license-image]][license-url]
+[![Downloads][downloads-image]][downloads-url]
 
-Encode a URL to a percent-encoded form, excluding already-encoded sequences
+[![npm badge][npm-badge-png]][package-url]
 
-## Installation
+A simple cache for a few of the JS Error constructors.
 
-This is a [Node.js](https://nodejs.org/en/) module available through the
-[npm registry](https://www.npmjs.com/). Installation is done using the
-[`npm install` command](https://docs.npmjs.com/getting-started/installing-npm-packages-locally):
-
-```sh
-$ npm install encodeurl
-```
-
-## API
+## Example
 
 ```js
-var encodeUrl = require('encodeurl')
+const assert = require('assert');
+
+const Base = require('es-errors');
+const Eval = require('es-errors/eval');
+const Range = require('es-errors/range');
+const Ref = require('es-errors/ref');
+const Syntax = require('es-errors/syntax');
+const Type = require('es-errors/type');
+const URI = require('es-errors/uri');
+
+assert.equal(Base, Error);
+assert.equal(Eval, EvalError);
+assert.equal(Range, RangeError);
+assert.equal(Ref, ReferenceError);
+assert.equal(Syntax, SyntaxError);
+assert.equal(Type, TypeError);
+assert.equal(URI, URIError);
 ```
 
-### encodeUrl(url)
+## Tests
+Simply clone the repo, `npm install`, and run `npm test`
 
-Encode a URL to a percent-encoded form, excluding already-encoded sequences.
+## Security
 
-This function will take an already-encoded URL and encode all the non-URL
-code points (as UTF-8 byte sequences). This function will not encode the
-"%" character unless it is not part of a valid sequence (`%20` will be
-left as-is, but `%foo` will be encoded as `%25foo`).
+Please email [@ljharb](https://github.com/ljharb) or see https://tidelift.com/security if you have a potential security vulnerability to report.
 
-This encode is meant to be "safe" and does not throw errors. It will try as
-hard as it can to properly encode the given URL, including replacing any raw,
-unpaired surrogate pairs with the Unicode replacement character prior to
-encoding.
-
-This function is _similar_ to the intrinsic function `encodeURI`, except it
-will not encode the `%` character if that is part of a valid sequence, will
-not encode `[` and `]` (for IPv6 hostnames) and will replace raw, unpaired
-surrogate pairs with the Unicode replacement character (instead of throwing).
-
-## Examples
-
-### Encode a URL containing user-controled data
-
-```js
-var encodeUrl = require('encodeurl')
-var escapeHtml = require('escape-html')
-
-http.createServer(function onRequest (req, res) {
-  // get encoded form of inbound url
-  var url = encodeUrl(req.url)
-
-  // create html message
-  var body = '<p>Location ' + escapeHtml(url) + ' not found</p>'
-
-  // send a 404
-  res.statusCode = 404
-  res.setHeader('Content-Type', 'text/html; charset=UTF-8')
-  res.setHeader('Content-Length', String(Buffer.byteLength(body, 'utf-8')))
-  res.end(body, 'utf-8')
-})
-```
-
-### Encode a URL for use in a header field
-
-```js
-var encodeUrl = require('encodeurl')
-var escapeHtml = require('escape-html')
-var url = require('url')
-
-http.createServer(function onRequest (req, res) {
-  // parse inbound url
-  var href = url.parse(req)
-
-  // set new host for redirect
-  href.host = 'localhost'
-  href.protocol = 'https:'
-  href.slashes = true
-
-  // create location header
-  var location = encodeUrl(url.format(href))
-
-  // create html message
-  var body = '<p>Redirecting to new site: ' + escapeHtml(location) + '</p>'
-
-  // send a 301
-  res.statusCode = 301
-  res.setHeader('Content-Type', 'text/html; charset=UTF-8')
-  res.setHeader('Content-Length', String(Buffer.byteLength(body, 'utf-8')))
-  res.setHeader('Location', location)
-  res.end(body, 'utf-8')
-})
-```
-
-## Testing
-
-```sh
-$ npm test
-$ npm run lint
-```
-
-## References
-
-- [RFC 3986: Uniform Resource Identifier (URI): Generic Syntax][rfc-3986]
-- [WHATWG URL Living Standard][whatwg-url]
-
-[rfc-3986]: https://tools.ietf.org/html/rfc3986
-[whatwg-url]: https://url.spec.whatwg.org/
-
-## License
-
-[MIT](LICENSE)
-
-[npm-image]: https://img.shields.io/npm/v/encodeurl.svg
-[npm-url]: https://npmjs.org/package/encodeurl
-[node-version-image]: https://img.shields.io/node/v/encodeurl.svg
-[node-version-url]: https://nodejs.org/en/download
-[travis-image]: https://img.shields.io/travis/pillarjs/encodeurl.svg
-[travis-url]: https://travis-ci.org/pillarjs/encodeurl
-[coveralls-image]: https://img.shields.io/coveralls/pillarjs/encodeurl.svg
-[coveralls-url]: https://coveralls.io/r/pillarjs/encodeurl?branch=master
-[downloads-image]: https://img.shields.io/npm/dm/encodeurl.svg
-[downloads-url]: https://npmjs.org/package/encodeurl
+[package-url]: https://npmjs.org/package/es-errors
+[npm-version-svg]: https://versionbadg.es/ljharb/es-errors.svg
+[deps-svg]: https://david-dm.org/ljharb/es-errors.svg
+[deps-url]: https://david-dm.org/ljharb/es-errors
+[dev-deps-svg]: https://david-dm.org/ljharb/es-errors/dev-status.svg
+[dev-deps-url]: https://david-dm.org/ljharb/es-errors#info=devDependencies
+[npm-badge-png]: https://nodei.co/npm/es-errors.png?downloads=true&stars=true
+[license-image]: https://img.shields.io/npm/l/es-errors.svg
+[license-url]: LICENSE
+[downloads-image]: https://img.shields.io/npm/dm/es-errors.svg
+[downloads-url]: https://npm-stat.com/charts.html?package=es-errors
+[codecov-image]: https://codecov.io/gh/ljharb/es-errors/branch/main/graphs/badge.svg
+[codecov-url]: https://app.codecov.io/gh/ljharb/es-errors/
+[actions-image]: https://img.shields.io/endpoint?url=https://github-actions-badge-u3jn4tfpocch.runkit.sh/ljharb/es-errors
+[actions-url]: https://github.com/ljharb/es-errors/actions
