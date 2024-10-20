@@ -1,76 +1,96 @@
 {
-  "_from": "balanced-match@^1.0.0",
-  "_id": "balanced-match@1.0.2",
+  "_from": "body-parser@^1.20.2",
+  "_id": "body-parser@1.20.2",
   "_inBundle": false,
-  "_integrity": "sha512-3oSeUO0TMV67hN1AmbXsK4yaqU7tjiHlbxRDZOpH0KW9+CeX4bRAaX0Anxt0tx2MrpRpWwQaPwIlISEJhYU5Pw==",
-  "_location": "/balanced-match",
+  "_integrity": "sha512-ml9pReCu3M61kGlqoTm2umSXTlRTuGTx0bfYj+uIUKKYycG5NtSbeetV3faSU6R7ajOPw0g/J1PvK4qNy7s5bA==",
+  "_location": "/body-parser",
   "_phantomChildren": {},
   "_requested": {
     "type": "range",
     "registry": true,
-    "raw": "balanced-match@^1.0.0",
-    "name": "balanced-match",
-    "escapedName": "balanced-match",
-    "rawSpec": "^1.0.0",
+    "raw": "body-parser@^1.20.2",
+    "name": "body-parser",
+    "escapedName": "body-parser",
+    "rawSpec": "^1.20.2",
     "saveSpec": null,
-    "fetchSpec": "^1.0.0"
+    "fetchSpec": "^1.20.2"
   },
   "_requiredBy": [
-    "/brace-expansion"
+    "/",
+    "/express"
   ],
-  "_resolved": "https://registry.npmjs.org/balanced-match/-/balanced-match-1.0.2.tgz",
-  "_shasum": "e83e3a7e3f300b34cb9d87f615fa0cbf357690ee",
-  "_spec": "balanced-match@^1.0.0",
-  "_where": "/home/i_bojja.pravalika/Downloads/-Rule-Engine-with-AST-main/Backend/node_modules/brace-expansion",
-  "author": {
-    "name": "Julian Gruber",
-    "email": "mail@juliangruber.com",
-    "url": "http://juliangruber.com"
-  },
+  "_resolved": "https://registry.npmjs.org/body-parser/-/body-parser-1.20.2.tgz",
+  "_shasum": "6feb0e21c4724d06de7ff38da36dad4f57a747fd",
+  "_spec": "body-parser@^1.20.2",
+  "_where": "/home/i_bojja.pravalika/Downloads/-Rule-Engine-with-AST-main/Backend",
   "bugs": {
-    "url": "https://github.com/juliangruber/balanced-match/issues"
+    "url": "https://github.com/expressjs/body-parser/issues"
   },
   "bundleDependencies": false,
-  "deprecated": false,
-  "description": "Match balanced character pairs, like \"{\" and \"}\"",
-  "devDependencies": {
-    "matcha": "^0.7.0",
-    "tape": "^4.6.0"
-  },
-  "homepage": "https://github.com/juliangruber/balanced-match",
-  "keywords": [
-    "match",
-    "regexp",
-    "test",
-    "balanced",
-    "parse"
+  "contributors": [
+    {
+      "name": "Douglas Christopher Wilson",
+      "email": "doug@somethingdoug.com"
+    },
+    {
+      "name": "Jonathan Ong",
+      "email": "me@jongleberry.com",
+      "url": "http://jongleberry.com"
+    }
   ],
+  "dependencies": {
+    "bytes": "3.1.2",
+    "content-type": "~1.0.5",
+    "debug": "2.6.9",
+    "depd": "2.0.0",
+    "destroy": "1.2.0",
+    "http-errors": "2.0.0",
+    "iconv-lite": "0.4.24",
+    "on-finished": "2.4.1",
+    "qs": "6.11.0",
+    "raw-body": "2.5.2",
+    "type-is": "~1.6.18",
+    "unpipe": "1.0.0"
+  },
+  "deprecated": false,
+  "description": "Node.js body parsing middleware",
+  "devDependencies": {
+    "eslint": "8.34.0",
+    "eslint-config-standard": "14.1.1",
+    "eslint-plugin-import": "2.27.5",
+    "eslint-plugin-markdown": "3.0.0",
+    "eslint-plugin-node": "11.1.0",
+    "eslint-plugin-promise": "6.1.1",
+    "eslint-plugin-standard": "4.1.0",
+    "methods": "1.1.2",
+    "mocha": "10.2.0",
+    "nyc": "15.1.0",
+    "safe-buffer": "5.2.1",
+    "supertest": "6.3.3"
+  },
+  "engines": {
+    "node": ">= 0.8",
+    "npm": "1.2.8000 || >= 1.4.16"
+  },
+  "files": [
+    "lib/",
+    "LICENSE",
+    "HISTORY.md",
+    "SECURITY.md",
+    "index.js"
+  ],
+  "homepage": "https://github.com/expressjs/body-parser#readme",
   "license": "MIT",
-  "main": "index.js",
-  "name": "balanced-match",
+  "name": "body-parser",
   "repository": {
     "type": "git",
-    "url": "git://github.com/juliangruber/balanced-match.git"
+    "url": "git+https://github.com/expressjs/body-parser.git"
   },
   "scripts": {
-    "bench": "matcha test/bench.js",
-    "test": "tape test/test.js"
+    "lint": "eslint .",
+    "test": "mocha --require test/support/env --reporter spec --check-leaks --bail test/",
+    "test-ci": "nyc --reporter=lcov --reporter=text npm test",
+    "test-cov": "nyc --reporter=html --reporter=text npm test"
   },
-  "testling": {
-    "files": "test/*.js",
-    "browsers": [
-      "ie/8..latest",
-      "firefox/20..latest",
-      "firefox/nightly",
-      "chrome/25..latest",
-      "chrome/canary",
-      "opera/12..latest",
-      "opera/next",
-      "safari/5.1..latest",
-      "ipad/6.0..latest",
-      "iphone/6.0..latest",
-      "android-browser/4.2..latest"
-    ]
-  },
-  "version": "1.0.2"
+  "version": "1.20.2"
 }

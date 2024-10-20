@@ -1,62 +1,156 @@
-'use strict';
-module.exports = balanced;
-function balanced(a, b, str) {
-  if (a instanceof RegExp) a = maybeMatch(a, str);
-  if (b instanceof RegExp) b = maybeMatch(b, str);
+/*!
+ * body-parser
+ * Copyright(c) 2014-2015 Douglas Christopher Wilson
+ * MIT Licensed
+ */
 
-  var r = range(a, b, str);
+'use strict'
 
-  return r && {
-    start: r[0],
-    end: r[1],
-    pre: str.slice(0, r[0]),
-    body: str.slice(r[0] + a.length, r[1]),
-    post: str.slice(r[1] + b.length)
-  };
+/**
+ * Module dependencies.
+ * @private
+ */
+
+var deprecate = require('depd')('body-parser')
+
+/**
+ * Cache of loaded parsers.
+ * @private
+ */
+
+var parsers = Object.create(null)
+
+/**
+ * @typedef Parsers
+ * @type {function}
+ * @property {function} json
+ * @property {function} raw
+ * @property {function} text
+ * @property {function} urlencoded
+ */
+
+/**
+ * Module exports.
+ * @type {Parsers}
+ */
+
+exports = module.exports = deprecate.function(bodyParser,
+  'bodyParser: use individual json/urlencoded middlewares')
+
+/**
+ * JSON parser.
+ * @public
+ */
+
+Object.defineProperty(exports, 'json', {
+  configurable: true,
+  enumerable: true,
+  get: createParserGetter('json')
+})
+
+/**
+ * Raw parser.
+ * @public
+ */
+
+Object.defineProperty(exports, 'raw', {
+  configurable: true,
+  enumerable: true,
+  get: createParserGetter('raw')
+})
+
+/**
+ * Text parser.
+ * @public
+ */
+
+Object.defineProperty(exports, 'text', {
+  configurable: true,
+  enumerable: true,
+  get: createParserGetter('text')
+})
+
+/**
+ * URL-encoded parser.
+ * @public
+ */
+
+Object.defineProperty(exports, 'urlencoded', {
+  configurable: true,
+  enumerable: true,
+  get: createParserGetter('urlencoded')
+})
+
+/**
+ * Create a middleware to parse json and urlencoded bodies.
+ *
+ * @param {object} [options]
+ * @return {function}
+ * @deprecated
+ * @public
+ */
+
+function bodyParser (options) {
+  // use default type for parsers
+  var opts = Object.create(options || null, {
+    type: {
+      configurable: true,
+      enumerable: true,
+      value: undefined,
+      writable: true
+    }
+  })
+
+  var _urlencoded = exports.urlencoded(opts)
+  var _json = exports.json(opts)
+
+  return function bodyParser (req, res, next) {
+    _json(req, res, function (err) {
+      if (err) return next(err)
+      _urlencoded(req, res, next)
+    })
+  }
 }
 
-function maybeMatch(reg, str) {
-  var m = str.match(reg);
-  return m ? m[0] : null;
+/**
+ * Create a getter for loading a parser.
+ * @private
+ */
+
+function createParserGetter (name) {
+  return function get () {
+    return loadParser(name)
+  }
 }
 
-balanced.range = range;
-function range(a, b, str) {
-  var begs, beg, left, right, result;
-  var ai = str.indexOf(a);
-  var bi = str.indexOf(b, ai + 1);
-  var i = ai;
+/**
+ * Load a parser module.
+ * @private
+ */
 
-  if (ai >= 0 && bi > 0) {
-    if(a===b) {
-      return [ai, bi];
-    }
-    begs = [];
-    left = str.length;
+function loadParser (parserName) {
+  var parser = parsers[parserName]
 
-    while (i >= 0 && !result) {
-      if (i == ai) {
-        begs.push(i);
-        ai = str.indexOf(a, i + 1);
-      } else if (begs.length == 1) {
-        result = [ begs.pop(), bi ];
-      } else {
-        beg = begs.pop();
-        if (beg < left) {
-          left = beg;
-          right = bi;
-        }
-
-        bi = str.indexOf(b, i + 1);
-      }
-
-      i = ai < bi && ai >= 0 ? ai : bi;
-    }
-
-    if (begs.length) {
-      result = [ left, right ];
-    }
+  if (parser !== undefined) {
+    return parser
   }
 
-  return result;
+  // this uses a switch for static require analysis
+  switch (parserName) {
+    case 'json':
+      parser = require('./lib/types/json')
+      break
+    case 'raw':
+      parser = require('./lib/types/raw')
+      break
+    case 'text':
+      parser = require('./lib/types/text')
+      break
+    case 'urlencoded':
+      parser = require('./lib/types/urlencoded')
+      break
+  }
+
+  // store to prevent invoking require()
+  return (parsers[parserName] = parser)
 }
