@@ -1,187 +1,419 @@
-# is-number [![NPM version](https://img.shields.io/npm/v/is-number.svg?style=flat)](https://www.npmjs.com/package/is-number) [![NPM monthly downloads](https://img.shields.io/npm/dm/is-number.svg?style=flat)](https://npmjs.org/package/is-number) [![NPM total downloads](https://img.shields.io/npm/dt/is-number.svg?style=flat)](https://npmjs.org/package/is-number) [![Linux Build Status](https://img.shields.io/travis/jonschlinkert/is-number.svg?style=flat&label=Travis)](https://travis-ci.org/jonschlinkert/is-number)
+# kareem
 
-> Returns true if the value is a finite number.
+  [![Build Status](https://github.com/mongoosejs/kareem/actions/workflows/test.yml/badge.svg?branch=master)](https://github.com/mongoosejs/kareem/actions/workflows/test.yml)
+  <!--[![Coverage Status](https://img.shields.io/coveralls/vkarpov15/kareem.svg)](https://coveralls.io/r/vkarpov15/kareem)-->
 
-Please consider following this project's author, [Jon Schlinkert](https://github.com/jonschlinkert), and consider starring the project to show your :heart: and support.
+Re-imagined take on the [hooks](http://npmjs.org/package/hooks) module, meant to offer additional flexibility in allowing you to execute hooks whenever necessary, as opposed to simply wrapping a single function.
 
-## Install
+Named for the NBA's all-time leading scorer Kareem Abdul-Jabbar, known for his mastery of the [hook shot](http://en.wikipedia.org/wiki/Kareem_Abdul-Jabbar#Skyhook)
 
-Install with [npm](https://www.npmjs.com/):
+<img src="http://upload.wikimedia.org/wikipedia/commons/0/00/Kareem-Abdul-Jabbar_Lipofsky.jpg" width="220">
 
-```sh
-$ npm install --save is-number
+# API
+
+## pre hooks
+
+Much like [hooks](https://npmjs.org/package/hooks), kareem lets you define
+pre and post hooks: pre hooks are called before a given function executes.
+Unlike hooks, kareem stores hooks and other internal state in a separate
+object, rather than relying on inheritance. Furthermore, kareem exposes
+an `execPre()` function that allows you to execute your pre hooks when
+appropriate, giving you more fine-grained control over your function hooks.
+
+
+#### It runs without any hooks specified
+
+```javascript
+hooks.execPre('cook', null, function() {
+  // ...
+});
 ```
 
-## Why is this needed?
+#### It runs basic serial pre hooks
 
-In JavaScript, it's not always as straightforward as it should be to reliably check if a value is a number. It's common for devs to use `+`, `-`, or `Number()` to cast a string value to a number (for example, when values are returned from user input, regex matches, parsers, etc). But there are many non-intuitive edge cases that yield unexpected results:
+pre hook functions take one parameter, a "done" function that you execute
+when your pre hook is finished.
 
-```js
-console.log(+[]); //=> 0
-console.log(+''); //=> 0
-console.log(+'   '); //=> 0
-console.log(typeof NaN); //=> 'number'
+
+```javascript
+var count = 0;
+
+hooks.pre('cook', function(done) {
+  ++count;
+  done();
+});
+
+hooks.execPre('cook', null, function() {
+  assert.equal(1, count);
+});
 ```
 
-This library offers a performant way to smooth out edge cases like these.
+#### It can run multipe pre hooks
 
-## Usage
+```javascript
+var count1 = 0;
+var count2 = 0;
 
-```js
-const isNumber = require('is-number');
+hooks.pre('cook', function(done) {
+  ++count1;
+  done();
+});
+
+hooks.pre('cook', function(done) {
+  ++count2;
+  done();
+});
+
+hooks.execPre('cook', null, function() {
+  assert.equal(1, count1);
+  assert.equal(1, count2);
+});
 ```
 
-See the [tests](./test.js) for more examples.
+#### It can run fully synchronous pre hooks
 
-### true
+If your pre hook function takes no parameters, its assumed to be
+fully synchronous.
 
-```js
-isNumber(5e3);               // true
-isNumber(0xff);              // true
-isNumber(-1.1);              // true
-isNumber(0);                 // true
-isNumber(1);                 // true
-isNumber(1.1);               // true
-isNumber(10);                // true
-isNumber(10.10);             // true
-isNumber(100);               // true
-isNumber('-1.1');            // true
-isNumber('0');               // true
-isNumber('012');             // true
-isNumber('0xff');            // true
-isNumber('1');               // true
-isNumber('1.1');             // true
-isNumber('10');              // true
-isNumber('10.10');           // true
-isNumber('100');             // true
-isNumber('5e3');             // true
-isNumber(parseInt('012'));   // true
-isNumber(parseFloat('012')); // true
+
+```javascript
+var count1 = 0;
+var count2 = 0;
+
+hooks.pre('cook', function() {
+  ++count1;
+});
+
+hooks.pre('cook', function() {
+  ++count2;
+});
+
+hooks.execPre('cook', null, function(error) {
+  assert.equal(null, error);
+  assert.equal(1, count1);
+  assert.equal(1, count2);
+});
 ```
 
-### False
+#### It properly attaches context to pre hooks
 
-Everything else is false, as you would expect:
+Pre save hook functions are bound to the second parameter to `execPre()`
 
-```js
-isNumber(Infinity);          // false
-isNumber(NaN);               // false
-isNumber(null);              // false
-isNumber(undefined);         // false
-isNumber('');                // false
-isNumber('   ');             // false
-isNumber('foo');             // false
-isNumber([1]);               // false
-isNumber([]);                // false
-isNumber(function () {});    // false
-isNumber({});                // false
+
+```javascript
+hooks.pre('cook', function(done) {
+  this.bacon = 3;
+  done();
+});
+
+hooks.pre('cook', function(done) {
+  this.eggs = 4;
+  done();
+});
+
+var obj = { bacon: 0, eggs: 0 };
+
+// In the pre hooks, `this` will refer to `obj`
+hooks.execPre('cook', obj, function(error) {
+  assert.equal(null, error);
+  assert.equal(3, obj.bacon);
+  assert.equal(4, obj.eggs);
+});
 ```
 
-## Release history
+#### It can execute parallel (async) pre hooks
 
-### 7.0.0
+Like the hooks module, you can declare "async" pre hooks - these take two
+parameters, the functions `next()` and `done()`. `next()` passes control to
+the next pre hook, but the underlying function won't be called until all
+async pre hooks have called `done()`.
 
-* Refactor. Now uses `.isFinite` if it exists.
-* Performance is about the same as v6.0 when the value is a string or number. But it's now 3x-4x faster when the value is not a string or number.
 
-### 6.0.0
+```javascript
+hooks.pre('cook', true, function(next, done) {
+  this.bacon = 3;
+  next();
+  setTimeout(function() {
+    done();
+  }, 5);
+});
 
-* Optimizations, thanks to @benaadams.
+hooks.pre('cook', true, function(next, done) {
+  next();
+  var _this = this;
+  setTimeout(function() {
+    _this.eggs = 4;
+    done();
+  }, 10);
+});
 
-### 5.0.0
+hooks.pre('cook', function(next) {
+  this.waffles = false;
+  next();
+});
 
-**Breaking changes**
+var obj = { bacon: 0, eggs: 0 };
 
-* removed support for `instanceof Number` and `instanceof String`
-
-## Benchmarks
-
-As with all benchmarks, take these with a grain of salt. See the [benchmarks](./benchmark/index.js) for more detail.
-
-```
-# all
-v7.0 x 413,222 ops/sec ±2.02% (86 runs sampled)
-v6.0 x 111,061 ops/sec ±1.29% (85 runs sampled)
-parseFloat x 317,596 ops/sec ±1.36% (86 runs sampled)
-fastest is 'v7.0'
-
-# string
-v7.0 x 3,054,496 ops/sec ±1.05% (89 runs sampled)
-v6.0 x 2,957,781 ops/sec ±0.98% (88 runs sampled)
-parseFloat x 3,071,060 ops/sec ±1.13% (88 runs sampled)
-fastest is 'parseFloat,v7.0'
-
-# number
-v7.0 x 3,146,895 ops/sec ±0.89% (89 runs sampled)
-v6.0 x 3,214,038 ops/sec ±1.07% (89 runs sampled)
-parseFloat x 3,077,588 ops/sec ±1.07% (87 runs sampled)
-fastest is 'v6.0'
-```
-
-## About
-
-<details>
-<summary><strong>Contributing</strong></summary>
-
-Pull requests and stars are always welcome. For bugs and feature requests, [please create an issue](../../issues/new).
-
-</details>
-
-<details>
-<summary><strong>Running Tests</strong></summary>
-
-Running and reviewing unit tests is a great way to get familiarized with a library and its API. You can install dependencies and run tests with the following command:
-
-```sh
-$ npm install && npm test
+hooks.execPre('cook', obj, function() {
+  assert.equal(3, obj.bacon);
+  assert.equal(4, obj.eggs);
+  assert.equal(false, obj.waffles);
+});
 ```
 
-</details>
+#### It supports returning a promise
 
-<details>
-<summary><strong>Building docs</strong></summary>
+You can also return a promise from your pre hooks instead of calling
+`next()`. When the returned promise resolves, kareem will kick off the
+next middleware.
 
-_(This project's readme.md is generated by [verb](https://github.com/verbose/verb-generate-readme), please don't edit the readme directly. Any changes to the readme must be made in the [.verb.md](.verb.md) readme template.)_
 
-To generate the readme, run the following command:
+```javascript
+hooks.pre('cook', function() {
+  return new Promise(resolve => {
+    setTimeout(() => {
+      this.bacon = 3;
+      resolve();
+    }, 100);
+  });
+});
 
-```sh
-$ npm install -g verbose/verb#dev verb-generate-readme && verb
+var obj = { bacon: 0 };
+
+hooks.execPre('cook', obj, function() {
+  assert.equal(3, obj.bacon);
+});
 ```
 
-</details>
+## post hooks
 
-### Related projects
+acquit:ignore:end
 
-You might also be interested in these projects:
+#### It runs without any hooks specified
 
-* [is-plain-object](https://www.npmjs.com/package/is-plain-object): Returns true if an object was created by the `Object` constructor. | [homepage](https://github.com/jonschlinkert/is-plain-object "Returns true if an object was created by the `Object` constructor.")
-* [is-primitive](https://www.npmjs.com/package/is-primitive): Returns `true` if the value is a primitive.  | [homepage](https://github.com/jonschlinkert/is-primitive "Returns `true` if the value is a primitive. ")
-* [isobject](https://www.npmjs.com/package/isobject): Returns true if the value is an object and not an array or null. | [homepage](https://github.com/jonschlinkert/isobject "Returns true if the value is an object and not an array or null.")
-* [kind-of](https://www.npmjs.com/package/kind-of): Get the native type of a value. | [homepage](https://github.com/jonschlinkert/kind-of "Get the native type of a value.")
+```javascript
+hooks.execPost('cook', null, [1], function(error, eggs) {
+  assert.ifError(error);
+  assert.equal(1, eggs);
+  done();
+});
+```
 
-### Contributors
+#### It executes with parameters passed in
 
-| **Commits** | **Contributor** | 
-| --- | --- |
-| 49 | [jonschlinkert](https://github.com/jonschlinkert) |
-| 5 | [charlike-old](https://github.com/charlike-old) |
-| 1 | [benaadams](https://github.com/benaadams) |
-| 1 | [realityking](https://github.com/realityking) |
+```javascript
+hooks.post('cook', function(eggs, bacon, callback) {
+  assert.equal(1, eggs);
+  assert.equal(2, bacon);
+  callback();
+});
 
-### Author
+hooks.execPost('cook', null, [1, 2], function(error, eggs, bacon) {
+  assert.ifError(error);
+  assert.equal(1, eggs);
+  assert.equal(2, bacon);
+});
+```
 
-**Jon Schlinkert**
+#### It can use synchronous post hooks
 
-* [LinkedIn Profile](https://linkedin.com/in/jonschlinkert)
-* [GitHub Profile](https://github.com/jonschlinkert)
-* [Twitter Profile](https://twitter.com/jonschlinkert)
+```javascript
+var execed = {};
 
-### License
+hooks.post('cook', function(eggs, bacon) {
+  execed.first = true;
+  assert.equal(1, eggs);
+  assert.equal(2, bacon);
+});
 
-Copyright © 2018, [Jon Schlinkert](https://github.com/jonschlinkert).
-Released under the [MIT License](LICENSE).
+hooks.post('cook', function(eggs, bacon, callback) {
+  execed.second = true;
+  assert.equal(1, eggs);
+  assert.equal(2, bacon);
+  callback();
+});
 
-***
+hooks.execPost('cook', null, [1, 2], function(error, eggs, bacon) {
+  assert.ifError(error);
+  assert.equal(2, Object.keys(execed).length);
+  assert.ok(execed.first);
+  assert.ok(execed.second);
+  assert.equal(1, eggs);
+  assert.equal(2, bacon);
+});
+```
 
-_This file was generated by [verb-generate-readme](https://github.com/verbose/verb-generate-readme), v0.6.0, on June 15, 2018._
+#### It supports returning a promise
+
+You can also return a promise from your post hooks instead of calling
+`next()`. When the returned promise resolves, kareem will kick off the
+next middleware.
+
+
+```javascript
+hooks.post('cook', function(bacon) {
+  return new Promise(resolve => {
+    setTimeout(() => {
+      this.bacon = 3;
+      resolve();
+    }, 100);
+  });
+});
+
+var obj = { bacon: 0 };
+
+hooks.execPost('cook', obj, obj, function() {
+  assert.equal(obj.bacon, 3);
+});
+```
+
+## wrap()
+
+acquit:ignore:end
+
+#### It wraps pre and post calls into one call
+
+```javascript
+hooks.pre('cook', true, function(next, done) {
+  this.bacon = 3;
+  next();
+  setTimeout(function() {
+    done();
+  }, 5);
+});
+
+hooks.pre('cook', true, function(next, done) {
+  next();
+  var _this = this;
+  setTimeout(function() {
+    _this.eggs = 4;
+    done();
+  }, 10);
+});
+
+hooks.pre('cook', function(next) {
+  this.waffles = false;
+  next();
+});
+
+hooks.post('cook', function(obj) {
+  obj.tofu = 'no';
+});
+
+var obj = { bacon: 0, eggs: 0 };
+
+var args = [obj];
+args.push(function(error, result) {
+  assert.ifError(error);
+  assert.equal(null, error);
+  assert.equal(3, obj.bacon);
+  assert.equal(4, obj.eggs);
+  assert.equal(false, obj.waffles);
+  assert.equal('no', obj.tofu);
+
+  assert.equal(obj, result);
+});
+
+hooks.wrap(
+  'cook',
+  function(o, callback) {
+    assert.equal(3, obj.bacon);
+    assert.equal(4, obj.eggs);
+    assert.equal(false, obj.waffles);
+    assert.equal(undefined, obj.tofu);
+    callback(null, o);
+  },
+  obj,
+  args);
+```
+
+## createWrapper()
+
+#### It wraps wrap() into a callable function
+
+```javascript
+hooks.pre('cook', true, function(next, done) {
+  this.bacon = 3;
+  next();
+  setTimeout(function() {
+    done();
+  }, 5);
+});
+
+hooks.pre('cook', true, function(next, done) {
+  next();
+  var _this = this;
+  setTimeout(function() {
+    _this.eggs = 4;
+    done();
+  }, 10);
+});
+
+hooks.pre('cook', function(next) {
+  this.waffles = false;
+  next();
+});
+
+hooks.post('cook', function(obj) {
+  obj.tofu = 'no';
+});
+
+var obj = { bacon: 0, eggs: 0 };
+
+var cook = hooks.createWrapper(
+  'cook',
+  function(o, callback) {
+    assert.equal(3, obj.bacon);
+    assert.equal(4, obj.eggs);
+    assert.equal(false, obj.waffles);
+    assert.equal(undefined, obj.tofu);
+    callback(null, o);
+  },
+  obj);
+
+cook(obj, function(error, result) {
+  assert.ifError(error);
+  assert.equal(3, obj.bacon);
+  assert.equal(4, obj.eggs);
+  assert.equal(false, obj.waffles);
+  assert.equal('no', obj.tofu);
+
+  assert.equal(obj, result);
+});
+```
+
+## clone()
+
+acquit:ignore:end
+
+#### It clones a Kareem object
+
+```javascript
+var k1 = new Kareem();
+k1.pre('cook', function() {});
+k1.post('cook', function() {});
+
+var k2 = k1.clone();
+assert.deepEqual(Array.from(k2._pres.keys()), ['cook']);
+assert.deepEqual(Array.from(k2._posts.keys()), ['cook']);
+```
+
+## merge()
+
+#### It pulls hooks from another Kareem object
+
+```javascript
+var k1 = new Kareem();
+var test1 = function() {};
+k1.pre('cook', test1);
+k1.post('cook', function() {});
+
+var k2 = new Kareem();
+var test2 = function() {};
+k2.pre('cook', test2);
+var k3 = k2.merge(k1);
+assert.equal(k3._pres.get('cook').length, 2);
+assert.equal(k3._pres.get('cook')[0].fn, test2);
+assert.equal(k3._pres.get('cook')[1].fn, test1);
+assert.equal(k3._posts.get('cook').length, 1);
+```
