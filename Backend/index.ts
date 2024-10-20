@@ -1,32 +1,19 @@
-import { ByteUtils } from '../../utils/byte_utils';
-import { NumberUtils } from '../../utils/number_utils';
-import { type BSONElement, parseToElements } from './parse_to_elements';
-/**
- * @experimental
- * @public
- *
- * A new set of BSON APIs that are currently experimental and not intended for production use.
- */
-export type OnDemand = {
-  parseToElements: (this: void, bytes: Uint8Array, startOffset?: number) => Iterable<BSONElement>;
-  // Types
-  BSONElement: BSONElement;
+import * as BSON from './bson';
 
-  // Utils
-  ByteUtils: ByteUtils;
-  NumberUtils: NumberUtils;
-};
+// Export all named properties from BSON to support
+// import { ObjectId, serialize } from 'bson';
+// const { ObjectId, serialize } = require('bson');
+export * from './bson';
 
-/**
- * @experimental
- * @public
- */
-const onDemand: OnDemand = Object.create(null);
+// Export BSON as a namespace to support:
+// import { BSON } from 'bson';
+// const { BSON } = require('bson');
+export { BSON };
 
-onDemand.parseToElements = parseToElements;
-onDemand.ByteUtils = ByteUtils;
-onDemand.NumberUtils = NumberUtils;
+// BSON does **NOT** have a default export
 
-Object.freeze(onDemand);
+// The following will crash in es module environments
+// import BSON from 'bson';
 
-export { onDemand };
+// The following will work as expected, BSON as a namespace of all the APIs (BSON.ObjectId, BSON.serialize)
+// const BSON = require('bson');
