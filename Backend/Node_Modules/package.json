@@ -1,95 +1,77 @@
 {
-  "_from": "http-errors@2.0.0",
-  "_id": "http-errors@2.0.0",
+  "_from": "iconv-lite@0.4.24",
+  "_id": "iconv-lite@0.4.24",
   "_inBundle": false,
-  "_integrity": "sha512-FtwrG/euBzaEjYeRqOgly7G0qviiXoJWnvEH2Z1plBdXgbyjv34pHTSb9zoeHMyDy33+DWy5Wt9Wo+TURtOYSQ==",
-  "_location": "/http-errors",
+  "_integrity": "sha512-v3MXnZAcvnywkTUEZomIActle7RXXeedOR31wwl7VlyoXO4Qi9arvSenNQWne1TcRwhCL1HwLI21bEqdpj8/rA==",
+  "_location": "/iconv-lite",
   "_phantomChildren": {},
   "_requested": {
     "type": "version",
     "registry": true,
-    "raw": "http-errors@2.0.0",
-    "name": "http-errors",
-    "escapedName": "http-errors",
-    "rawSpec": "2.0.0",
+    "raw": "iconv-lite@0.4.24",
+    "name": "iconv-lite",
+    "escapedName": "iconv-lite",
+    "rawSpec": "0.4.24",
     "saveSpec": null,
-    "fetchSpec": "2.0.0"
+    "fetchSpec": "0.4.24"
   },
   "_requiredBy": [
     "/body-parser",
-    "/express",
-    "/raw-body",
-    "/send"
+    "/raw-body"
   ],
-  "_resolved": "https://registry.npmjs.org/http-errors/-/http-errors-2.0.0.tgz",
-  "_shasum": "b7774a1486ef73cf7667ac9ae0858c012c57b9d3",
-  "_spec": "http-errors@2.0.0",
+  "_resolved": "https://registry.npmjs.org/iconv-lite/-/iconv-lite-0.4.24.tgz",
+  "_shasum": "2022b4b25fbddc21d2f524974a474aafe733908b",
+  "_spec": "iconv-lite@0.4.24",
   "_where": "/home/i_bojja.pravalika/Downloads/-Rule-Engine-with-AST-main/Backend/node_modules/body-parser",
   "author": {
-    "name": "Jonathan Ong",
-    "email": "me@jongleberry.com",
-    "url": "http://jongleberry.com"
+    "name": "Alexander Shtuchkin",
+    "email": "ashtuchkin@gmail.com"
+  },
+  "browser": {
+    "./lib/extend-node": false,
+    "./lib/streams": false
   },
   "bugs": {
-    "url": "https://github.com/jshttp/http-errors/issues"
+    "url": "https://github.com/ashtuchkin/iconv-lite/issues"
   },
   "bundleDependencies": false,
-  "contributors": [
-    {
-      "name": "Alan Plum",
-      "email": "me@pluma.io"
-    },
-    {
-      "name": "Douglas Christopher Wilson",
-      "email": "doug@somethingdoug.com"
-    }
-  ],
   "dependencies": {
-    "depd": "2.0.0",
-    "inherits": "2.0.4",
-    "setprototypeof": "1.2.0",
-    "statuses": "2.0.1",
-    "toidentifier": "1.0.1"
+    "safer-buffer": ">= 2.1.2 < 3"
   },
   "deprecated": false,
-  "description": "Create HTTP error objects",
+  "description": "Convert character encodings in pure javascript.",
   "devDependencies": {
-    "eslint": "7.32.0",
-    "eslint-config-standard": "14.1.1",
-    "eslint-plugin-import": "2.25.3",
-    "eslint-plugin-markdown": "2.2.1",
-    "eslint-plugin-node": "11.1.0",
-    "eslint-plugin-promise": "5.2.0",
-    "eslint-plugin-standard": "4.1.0",
-    "mocha": "9.1.3",
-    "nyc": "15.1.0"
+    "async": "*",
+    "errto": "*",
+    "iconv": "*",
+    "istanbul": "*",
+    "mocha": "^3.1.0",
+    "request": "~2.87.0",
+    "semver": "*",
+    "unorm": "*"
   },
   "engines": {
-    "node": ">= 0.8"
+    "node": ">=0.10.0"
   },
-  "files": [
-    "index.js",
-    "HISTORY.md",
-    "LICENSE",
-    "README.md"
-  ],
-  "homepage": "https://github.com/jshttp/http-errors#readme",
+  "homepage": "https://github.com/ashtuchkin/iconv-lite",
   "keywords": [
-    "http",
-    "error"
+    "iconv",
+    "convert",
+    "charset",
+    "icu"
   ],
   "license": "MIT",
-  "name": "http-errors",
+  "main": "./lib/index.js",
+  "name": "iconv-lite",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/jshttp/http-errors.git"
+    "url": "git://github.com/ashtuchkin/iconv-lite.git"
   },
   "scripts": {
-    "lint": "eslint . && node ./scripts/lint-readme-list.js",
-    "test": "mocha --reporter spec --bail",
-    "test-ci": "nyc --reporter=lcov --reporter=text npm test",
-    "test-cov": "nyc --reporter=html --reporter=text npm test",
-    "version": "node scripts/version-history.js && git add HISTORY.md"
+    "coverage": "istanbul cover _mocha -- --grep .",
+    "coverage-open": "open coverage/lcov-report/index.html",
+    "test": "mocha --reporter spec --grep ."
   },
-  "version": "2.0.0"
+  "typings": "./lib/index.d.ts",
+  "version": "0.4.24"
 }
